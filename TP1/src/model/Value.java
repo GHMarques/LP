@@ -1,0 +1,25 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package model;
+
+/**
+ *
+ * @author Aluno
+ */
+public abstract class Value<T> {
+
+    private int line;
+
+    public Value(int l){
+        line = l;
+    }
+    
+    public int line(){
+        return line;
+    }
+    public abstract T value();
+
+}

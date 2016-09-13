@@ -6,6 +6,8 @@
 package lexical;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -67,9 +69,20 @@ public class SyntaticalAnalysis {
         matchToken(TokenType.DOT_COMMA);
     }
     
-    void procVar() throws IOException{
+    
+    private Map<String,Variable> variables = new HashMap<string,Variable>();
+    Variable procVar() throws IOException{
+        String varName = current.token;
         matchToken(TokenType.VAR);
+        Variable v = variables.get(var.Name);
+        if(v==null){
+            v = new Variable(varName);
+            variables.put(varName,v);
+        }
+        return v;
     }
+    
+    
     
     void procString() throws IOException{
         matchToken(TokenType.STRING);
