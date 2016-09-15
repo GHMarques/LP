@@ -8,7 +8,7 @@ package lexical;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
+import model.*;
 /**
  *
  * @author gusta
@@ -70,14 +70,14 @@ public class SyntaticalAnalysis {
     }
     
     
-    private Map<String,Variable> variables = new HashMap<string,Variable>();
+    private Map<String,Variable> myvariables = new HashMap<String,Variable>();
     Variable procVar() throws IOException{
         String varName = current.token;
         matchToken(TokenType.VAR);
-        Variable v = variables.get(var.Name);
+        Variable v = myvariables.get(varName);
         if(v==null){
             v = new Variable(varName);
-            variables.put(varName,v);
+            myvariables.put(varName,v);
         }
         return v;
     }
@@ -126,7 +126,7 @@ public class SyntaticalAnalysis {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private void procText() {
+    private Value<?> procText() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -142,11 +142,27 @@ public class SyntaticalAnalysis {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private void procAssign() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private AssignCommand procAssign() throws IOException {
+        Variable var = procVar();
+        matchToken(TokenType.ASSIGN);
+        Value<?> val = procValue();
+        
+        matchToken(TokenType.DOT_COMMA);
+        AssignCommand c = new AssignCommand(var, val, lex.getLine());
+        return c;
     }
 
-    private void procShow() {
+    public ShowCommand procShow() throws IOException {
+        matchToken(TokenType.SHOW);
+        matchToken(TokenType.OPEN_PAR);
+        Value<?> v = procText();
+        matchToken(TokenType.CLOSE_PAR);
+        matchToken(TokenType.DOT_COMMA);
+        ShowCommand c = new ShowCommand(v,lex.getLine() );
+        return c;
+    }
+
+    private Value<?> procValue() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

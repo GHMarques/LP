@@ -3,13 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/gusta/OneDrive/Documentos/NetBeansProjects/TP1/src/lexical/TokenType.java</file>
-            <file>file:/C:/Users/gusta/OneDrive/Documentos/NetBeansProjects/TP1/src/lexical/LexicalAnalysis.java</file>
-            <file>file:/C:/Users/gusta/OneDrive/Documentos/NetBeansProjects/TP1/src/lexical/SymbolTable.java</file>
-            <file>file:/C:/Users/gusta/OneDrive/Documentos/NetBeansProjects/TP1/src/lexical/LexicalException.java</file>
-            <file>file:/C:/Users/gusta/OneDrive/Documentos/NetBeansProjects/TP1/src/lexical/Lexeme.java</file>
-            <file>file:/C:/Users/gusta/OneDrive/Documentos/NetBeansProjects/TP1/src/lexical/SyntaticalAnalysis.java</file>
-            <file>file:/C:/Users/gusta/OneDrive/Documentos/NetBeansProjects/TP1/src/tp1/TP1.java</file>
+            <file>file:/home/wendell/Downloads/LP-master/TP1/src/model/AssignCommand.java</file>
+            <file>file:/home/wendell/Downloads/LP-master/TP1/src/model/ConstIntValue.java</file>
+            <file>file:/home/wendell/Downloads/LP-master/TP1/src/model/ShowCommand.java</file>
+            <file>file:/home/wendell/Downloads/LP-master/TP1/src/model/IntValue.java</file>
+            <file>file:/home/wendell/Downloads/LP-master/TP1/src/model/RefMatrixValue.java</file>
         </group>
     </open-files>
 </project-private>
