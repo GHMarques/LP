@@ -161,4 +161,8 @@ public class LexicalAnalysis implements AutoCloseable {
             lex.type = TokenType.VAR;
         return lex;
     }
+    
+    public int getLine(){
+        return line;
+    }
 }

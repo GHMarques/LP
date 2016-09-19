@@ -5,6 +5,8 @@
  */
 package lexical;
 
+import Command.AssignCommand;
+import Command.ShowCommand;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,14 +84,16 @@ public class SyntaticalAnalysis {
         return v;
     }
     
-    
-    
-    void procString() throws IOException{
+    String procString() throws IOException{
+        String str = current.token;
         matchToken(TokenType.STRING);
+        return str;
     }
     
-    void procNumber() throws IOException{
+    Integer procNumber() throws IOException{
+        String number = current.token;
         matchToken(TokenType.NUMBER);
+        return Integer.parseInt(number);
     }
  
     void procIF() throws IOException{
@@ -126,7 +130,7 @@ public class SyntaticalAnalysis {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private Value<?> procText() {
+    private Value<?> procText() throws IOException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -148,21 +152,58 @@ public class SyntaticalAnalysis {
         Value<?> val = procValue();
         
         matchToken(TokenType.DOT_COMMA);
-        AssignCommand c = new AssignCommand(var, val, lex.getLine());
+        AssignCommand c = new AssignCommand(var, val, la.getLine()/*lex.getLine()*/);
         return c;
     }
 
     public ShowCommand procShow() throws IOException {
+        
         matchToken(TokenType.SHOW);
         matchToken(TokenType.OPEN_PAR);
         Value<?> v = procText();
         matchToken(TokenType.CLOSE_PAR);
         matchToken(TokenType.DOT_COMMA);
-        ShowCommand c = new ShowCommand(v,lex.getLine() );
+        ShowCommand c = new ShowCommand(v,la.getLine()/*lex.getLine()*/ );
         return c;
     }
+    
+    public Value<?> procValue() throws IOException {
+        if(current.type == TokenType.VAR){
+          procVar();
+        }else if(current.type == TokenType.OPEN_BRA){
+//            procGen();
+        }else abortUnexpectToken();
+        
+        while(current.type == TokenType.DOT){
+            matchToken(TokenType.DOT);
+            if(current.type == TokenType.OPPOSED){
+                procOpposed();
+            }else if(current.type == TokenType.MUL){
+                procMUL();
+            }else if(current.type == TokenType.SIZE){
+                procSize();
+                break;
+            }else if(current.type == TokenType.VALUE){
+                procVal();
+            }else abortUnexpectToken();
+        }
+        
+        return null;//value<?>
+    }
 
-    private Value<?> procValue() {
+    private void procOpposed() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void procMUL() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void procSize() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void procVal() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

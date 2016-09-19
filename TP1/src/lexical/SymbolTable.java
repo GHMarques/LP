@@ -38,6 +38,7 @@ class SymbolTable {
         st.put("null", TokenType.NULL);
         st.put("fill", TokenType.FILL);
         st.put("id", TokenType.ID);
+        st.put("opposed",TokenType.OPPOSED);
         st.put("transpposed", TokenType.TRANSPPOSED);
         st.put("sum", TokenType.SUM);
         st.put("mul", TokenType.MUL);

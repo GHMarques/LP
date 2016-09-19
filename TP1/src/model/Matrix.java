@@ -9,7 +9,7 @@ import java.util.Random;
  *
  * @author alunoccc
  */
-class Matrix {
+public class Matrix {
     private int rows, cols;
     int[][] matrix;
     
