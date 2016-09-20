@@ -61,7 +61,7 @@ class SymbolTable {
         st.put("<", TokenType.LOWER);
         st.put(">", TokenType.GREATER);
         st.put("<=", TokenType.LOWER_EQUAL);
-        st.put(">=", TokenType.GREATR_EQUAL);
+        st.put(">=", TokenType.GREATER_EQUAL);
         st.put("&", TokenType.AND);
         st.put("|", TokenType.OR);
         st.put("+", TokenType.PLUS);

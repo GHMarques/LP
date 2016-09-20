@@ -55,7 +55,7 @@ public enum TokenType {
     LOWER,
     GREATER,
     LOWER_EQUAL,
-    GREATR_EQUAL,
+    GREATER_EQUAL,
     AND,
     OR,
     PLUS,

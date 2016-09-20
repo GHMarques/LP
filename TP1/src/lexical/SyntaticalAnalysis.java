@@ -38,18 +38,22 @@ public class SyntaticalAnalysis {
             
     }
     
-    void procStatements() throws IOException{
+    void procStatements() throws IOException{//revisar
         procStatement();
         while(current.type == TokenType.INPUT ||
               current.type == TokenType.SHOW ||
               current.type == TokenType.VAR ||
+               //mais
+                current.type == TokenType.IF ||//<--
+                current.type == TokenType.WHILE ||//<--
+                current.type == TokenType.ASSIGN ||//<--
                //mais
                current.type == TokenType.FOR){
                procStatement();
         }
     }
     
-    void procStatement() throws IOException{
+    void procStatement() throws IOException{//revisar
         if(current.type == TokenType.INPUT){
             procInput();
         }else if(current.type == TokenType.SHOW){
@@ -58,6 +62,12 @@ public class SyntaticalAnalysis {
             procAssign();
         }else if(current.type == TokenType.FOR){
             procFor();
+        }else if(current.type == TokenType.ASSIGN){//<--
+            procAssign();
+        }else if(current.type == TokenType.WHILE){//<--
+            procWhile();
+        }else if(current.type == TokenType.IF){//<--
+            procIF();
         }else{
             abortUnexpectToken();
         }
@@ -122,28 +132,31 @@ public class SyntaticalAnalysis {
         }
     }
 
-    private void procIntExpr() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private void procBoolOp() throws IOException {//revisar
+        if(current.type == TokenType.EQUAL){
+            matchToken(TokenType.EQUAL);
+        }else if(current.type == TokenType.DIFF){
+            matchToken(TokenType.DIFF);
+        }else if(current.type == TokenType.LOWER){
+            matchToken(TokenType.LOWER);
+        }else if(current.type == TokenType.GREATER){
+            matchToken(TokenType.GREATER);
+        }else if(current.type == TokenType.LOWER_EQUAL){
+            matchToken(TokenType.LOWER_EQUAL);
+        }else if(current.type == TokenType.GREATER_EQUAL){
+            matchToken(TokenType.GREATER_EQUAL);
+        }else{
+            abortUnexpectToken();
+        }
     }
 
-    private void procBoolOp() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    private Value<?> procText() throws IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    private void abortEOF() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    private void abortUnexpectToken() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    private void procFor() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private void procFor() throws IOException {
+        matchToken(TokenType.FOR);
+        Variable var = procVar();
+        matchToken(TokenType.ASSIGN);
+        Value<?> val = procValue();
+        procStatements();
+        matchToken(TokenType.END);
     }
 
     private AssignCommand procAssign() throws IOException {
@@ -167,11 +180,11 @@ public class SyntaticalAnalysis {
         return c;
     }
     
-    public Value<?> procValue() throws IOException {
+    public Value<?> procValue() throws IOException {//revisar
         if(current.type == TokenType.VAR){
-          procVar();
+            procVar();
         }else if(current.type == TokenType.OPEN_BRA){
-//            procGen();
+            procGen();
         }else abortUnexpectToken();
         
         while(current.type == TokenType.DOT){
@@ -188,11 +201,15 @@ public class SyntaticalAnalysis {
             }else abortUnexpectToken();
         }
         
-        return null;//value<?>
+        return null;//value<?> <--
     }
 
-    private void procOpposed() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private void procOpposed() throws IOException {
+        Value<?> v = procText();
+        matchToken(TokenType.OPPOSED);
+        matchToken(TokenType.OPEN_PAR);
+        matchToken(TokenType.CLOSE_PAR);
+        OpposedMatrixValue m = new OpposedMatrixValue((MatrixValue) v,la.getLine());
     }
 
     private void procMUL() {
@@ -204,6 +221,30 @@ public class SyntaticalAnalysis {
     }
 
     private void procVal() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void procWhile() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void procGen() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    private Value<?> procText() throws IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void abortEOF() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void abortUnexpectToken() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    private void procIntExpr() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

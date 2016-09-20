@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package model;
-
+import java.util.Scanner;
 /**
  *
  * @author Aluno
@@ -19,7 +19,10 @@ public class InputIntValue extends IntValue{
     
     @Override
     public Integer value() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println(stringValue);
+        Scanner ler = new Scanner(System.in);
+        int num = ler.nextInt();
+        return num;
     }
     
 }
