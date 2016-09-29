@@ -11,13 +11,21 @@ package model;
  */
 public class RowsIntMatrixValue extends IntMatrixValue{
 
-    public RowsIntMatrixValue(Matrix m, int line) {
+    public RowsIntMatrixValue(Value<?> m, int line) {
         super(m, line);
     }
 
     @Override
     public Integer value() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Value<?> v = (m instanceof Variable ? (Variable) m.value() : m);
+        
+        if (v instanceof MatrixValue){
+            Matrix x = ((MatrixValue) v).value();
+            return x.rows();
+        } else {
+            // FIXME: Erro de tipos!
+            return null;
+        }
     }
     
 }

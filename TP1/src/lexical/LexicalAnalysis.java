@@ -13,7 +13,6 @@ public class LexicalAnalysis implements AutoCloseable {
 
     public LexicalAnalysis(String filename) throws LexicalException {
         try {
-            
             input = new PushbackInputStream(new FileInputStream(filename));
         } catch (Exception e) {
             throw new LexicalException("Unable to open file");
@@ -28,10 +27,6 @@ public class LexicalAnalysis implements AutoCloseable {
         } catch (Exception e) {
             // ignore
         }
-    }
-
-    public int line() {
-        return this.line;
     }
 
     public Lexeme nextToken() throws IOException {
@@ -144,6 +139,7 @@ public class LexicalAnalysis implements AutoCloseable {
                     }
                     else{
                         estado = 8;
+                        lex.type = TokenType.STRING;
                         return lex;
                     }
                     break;

@@ -9,17 +9,27 @@ package model;
  *
  * @author wendell
  */
-public class OpposedMatrixValue extends MatrixValue{
-    private MatrixValue m;
+public class OpposedMatrixValue extends MatrixValue {
+    
+    private Value<?> value;
 
-    public OpposedMatrixValue(MatrixValue m, int line) {
+    public OpposedMatrixValue(Value<?> value, int line) {
         super(line);
-        this.m = m;
+        
+        this.value = value;
     }
 
     @Override
     public Matrix value() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Value<?> v = (value instanceof Variable ? (Variable) value.value() : value);
+        
+        if (v instanceof MatrixValue){
+            Matrix x = ((MatrixValue) v).value();
+            return x.opposed();
+        } else {
+            // FIXME: Erro de tipos!
+            return null;
+        }
     }
     
     

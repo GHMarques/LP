@@ -15,6 +15,8 @@ public class ConstIntValue extends IntValue {
     
     public ConstIntValue(int value, int line) {
         super(line);
+        
+        this.value = value;
     }
     
     public Integer value() {

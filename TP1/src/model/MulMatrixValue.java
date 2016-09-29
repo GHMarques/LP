@@ -10,10 +10,10 @@ package model;
  * @author wendell
  */
 public class MulMatrixValue extends MatrixValue{
-    private MatrixValue m;
+    private Value<?> m;
     private Value<?> v;
     
-    public MulMatrixValue(MatrixValue m, Value<?> v, int line) {
+    public MulMatrixValue(Value<?> m, Value<?> v, int line) {
         super(line);
         this.m = m;
         this.v = v;

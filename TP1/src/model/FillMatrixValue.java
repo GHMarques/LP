@@ -10,12 +10,12 @@ package model;
  * @author wendell
  */
 public class FillMatrixValue extends MatrixValue{
-    private int r,c,v;
+    private Value<?> rows,cols,v;
 
-    public FillMatrixValue(int r, int c, int v, int line) {
+    public FillMatrixValue(Value<?> r, Value<?> c, Value<?> v, int line) {
         super(line);
-        this.r = r;
-        this.c = c;
+        this.rows = r;
+        this.cols = c;
         this.v = v;
     }
     
@@ -23,7 +23,20 @@ public class FillMatrixValue extends MatrixValue{
     
     @Override
     public Matrix value() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Value<?> v1 = (rows instanceof Variable ? (Variable) rows.value() : rows);
+        Value<?> v2 = (cols instanceof Variable ? (Variable) cols.value() : cols);
+        Value<?> v3 = (v instanceof Variable ? (Variable) v.value() : v);
+        
+        if (v1 instanceof ConstIntValue && v2 instanceof ConstIntValue){
+                int r = ((ConstIntValue)v1).value();
+                int c = ((ConstIntValue)v2).value();
+                int v = ((ConstIntValue)v3).value();
+                
+                return Matrix.fill(r, c, v);
+        }else{
+            // FIXME: Erro de tipos!
+            return null;
+        }
     }
     
 }

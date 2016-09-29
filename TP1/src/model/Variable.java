@@ -9,12 +9,14 @@ package model;
  *
  * @author alunoccc
  */
-public class Variable {
+public class Variable extends Value<Value<?>> {
 
     private String name;
     private Value<?> value;
 
     public Variable(String name) {
+        super(-1);
+
         this.name = name;
     }
     

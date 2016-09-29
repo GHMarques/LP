@@ -10,9 +10,9 @@ package model;
  * @author wendell
  */
 public class SumMatrixValue extends MatrixValue{
-    private MatrixValue m1, m2;
+    private Value<?> m1, m2;
 
-    public SumMatrixValue(MatrixValue m1, MatrixValue m2, int line) {
+    public SumMatrixValue(Value<?> m1, MatrixValue m2, int line) {
         super(line);
         this.m1 = m1;
         this.m2 = m2;
@@ -20,7 +20,17 @@ public class SumMatrixValue extends MatrixValue{
 
     @Override
     public Matrix value() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Value<?> v1 = (m1 instanceof Variable ? (Variable) m1.value() : m1);
+        Value<?> v2 = (m2 instanceof Variable ? (Variable) m2.value() : m2);
+        
+        if (v1 instanceof MatrixValue && v2 instanceof MatrixValue){
+            Matrix x = ((MatrixValue) v1).value();
+            Matrix y = ((MatrixValue) v2).value();
+            return x.sum(x, y);
+        } else {
+            // FIXME: Erro de tipos!
+            return null;
+        }
     }
     
 }

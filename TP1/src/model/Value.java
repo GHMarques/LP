@@ -13,7 +13,7 @@ public abstract class Value<T> {
 
     private int line;
 
-    public Value(int l){
+    public Value(int l) {
         line = l;
     }
     

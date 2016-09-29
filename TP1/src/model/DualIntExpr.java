@@ -22,6 +22,30 @@ public class DualIntExpr extends IntValue{
 
     @Override
     public Integer value() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Value<?> v1 = (left instanceof Variable ? ((Variable) left).value() : left);
+        Value<?> v2 = (right instanceof Variable ? ((Variable) right).value() : right);
+        
+        if (v1 instanceof IntValue && v2 instanceof IntValue) {
+            int n1 = ((IntValue) v1).value();
+            int n2 = ((IntValue) v2).value();
+            
+            switch (op) {
+                case Add:
+                    return n1+n2;
+                case Sub:
+                    return n1-n2;
+                case Div:
+                    return n1/n2;
+                case Mul:
+                    return n1*n2;
+                case Mod:
+                    return n1%n2;
+                default:
+                    return -1;
+            }
+        } else {
+            // FIXME: imprime tipos incompativies e aborta
+            return -1;
+        }
     }
 }

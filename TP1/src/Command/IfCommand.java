@@ -11,15 +11,20 @@ import model.BoolValue;
  *
  * @author wendell
  */
-public class IfCommand {
+public class IfCommand extends Command{
     private BoolValue expr;
     private Command then, _else;
 
-    public IfCommand(Command then) {
+    public IfCommand(BoolValue expr, Command then, int line){
+        super(line);
+        this.expr = expr;
         this.then = then;
+        this._else = null;
     }
 
-    public IfCommand(Command then, Command _else) {
+    public IfCommand(BoolValue expr, Command then, Command _else, int line) {
+        super(line);
+        this.expr = expr;
         this.then = then;
         this._else = _else;
     }

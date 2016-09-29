@@ -5,6 +5,7 @@
  */
 package Command;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -13,18 +14,23 @@ import java.util.List;
  * @author wendell
  */
 public class CommandBlock extends Command{
-    private List commands;
+    private List<Command> commands;
 
-    public CommandBlock(int line) {
-        super(line);
+    public CommandBlock() {
+        super(-1);
+        
+        commands = new ArrayList<Command>();
     }
 
     
-    void addCommand(Command c){
+   public void addCommand(Command c){
         commands.add(c);
     }
     
-    void execute(){
-    
+    public void execute(){
+        for (int i = 0; i < commands.size(); i++) {
+            Command c = commands.get(i);
+            c.execute();
+        }
     }
 }

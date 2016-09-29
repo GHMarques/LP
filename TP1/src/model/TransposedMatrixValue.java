@@ -10,15 +10,23 @@ package model;
  * @author wendell
  */
 public class TransposedMatrixValue extends MatrixValue{
-    private MatrixValue m;
+    private Value<?> m;
 
-    public TransposedMatrixValue(MatrixValue m, int line) {
+    public TransposedMatrixValue(Value<?> m, int line) {
         super(line);
         this.m = m;
     }
 
     @Override
     public Matrix value() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Value<?> v = (m instanceof Variable ? (Variable) m.value() : m);
+        
+        if (v instanceof MatrixValue){
+            Matrix x = ((MatrixValue) v).value();
+            return x.transposed();
+        } else {
+            // FIXME: Erro de tipos!
+            return null;
+        }
     }
 }

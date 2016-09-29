@@ -10,6 +10,7 @@ package model;
  * @author wendell
  */
 public abstract class StringValue extends Value<String>{
+    
     public StringValue(int line){
         super(line);
     }

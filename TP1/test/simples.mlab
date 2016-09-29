@@ -1,0 +1,3 @@
+x = input("Entre com um valor: ");
+y = x % 2;
+show(y);

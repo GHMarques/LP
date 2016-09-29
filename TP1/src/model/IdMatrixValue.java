@@ -10,17 +10,27 @@ package model;
  * @author wendell
  */
 public class IdMatrixValue extends MatrixValue{
-    int r,c;
+    Value<?> rows,cols;
 
-    public IdMatrixValue(int r, int c, int line) {
+    public IdMatrixValue(Value<?> r, Value<?> c, int line) {
         super(line);
-        this.r = r;
-        this.c = c;
+        this.rows = r;
+        this.cols = c;
     }
 
     @Override
     public Matrix value() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Value<?> v1 = (rows instanceof Variable ? (Variable) rows.value() : rows);
+        Value<?> v2 = (cols instanceof Variable ? (Variable) cols.value() : cols);
+        
+        if (v1 instanceof ConstIntValue && v2 instanceof ConstIntValue){
+                int r = ((ConstIntValue)v1).value();
+                int c = ((ConstIntValue)v2).value();
+                return Matrix.id(r, c);
+        }else{
+            // FIXME: Erro de tipos!
+            return null;
+        }
     }
     
 }

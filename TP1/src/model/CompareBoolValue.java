@@ -23,7 +23,7 @@ public class CompareBoolValue extends BoolValue{
     
     
     @Override
-    public boolean value() {
+    public Boolean value() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
             

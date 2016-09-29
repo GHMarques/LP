@@ -9,7 +9,7 @@ package Command;
  *
  * @author alunoccc
  */
-class Command {
+public class Command {
     private int line;
 
     public Command(int line) {

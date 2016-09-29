@@ -7,7 +7,7 @@ package model;
 import java.util.Random;
 /**
  *
- * @author alunoccc
+ * @author wendell
  */
 public class Matrix {
     private int rows, cols;
@@ -47,21 +47,43 @@ public class Matrix {
         return cols;
     }
     
+    //retorna valor da posicao [r][c]
     public int value(int r, int c)
     {
         return matrix[r][c];
     }    
     
-    public Matrix opposed(Matrix m){
-        return mul(m,-1);
+    //Inverte sinal dos elementos
+    public Matrix opposed(){
+        Matrix m = new Matrix(rows,cols);
+        
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                matrix[i][j]*=-1;
+            }
+        }
+        
+        m.matrix = this.matrix;
+        return m;
     }
     
+    //matrix transposta
     public Matrix transposed(){
-       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       Matrix m = new Matrix(rows,cols);
+       int[][] m2 = matrix;
+       
+       for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                matrix[i][j]=m2[j][i];
+            }
+        }
+       
+       m.matrix = this.matrix;
+       return m;
     }
     
-    public Matrix size(){
-       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public int size(){
+        return rows*cols;
     }
     
     public Matrix sum(Matrix x, Matrix y){
@@ -95,12 +117,19 @@ public class Matrix {
         return m;
     }
     
-    public Matrix _null(int r, int c){
+    //cria uma matrix nula
+    public static Matrix _null(int r, int c){
         Matrix m = new Matrix(r,c);
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                m.matrix[i][j]=0;
+            }
+        }
         return m;
     }
     
-    public Matrix fill(int r, int c, int v){
+    //cria uma matrix[r][c] preenchida com v's
+    public static Matrix fill(int r, int c, int v){
         Matrix matrix2 = new Matrix(r,c);
         for (int i = 0; i < r; i++) {
             for (int j = 0; j < c; j++) {
@@ -110,7 +139,8 @@ public class Matrix {
         return matrix2;
     }
     
-    public Matrix rand(int r, int c){
+    //cria uma matrix com valores aleatorios
+    public static Matrix rand(int r, int c){
         Matrix matrix2 = new Matrix(r,c);
         Random rand = new Random();
         for (int i = 0; i < r; i++) {
@@ -121,7 +151,7 @@ public class Matrix {
         return matrix2;
     }
     
-    public Matrix id(int r, int c){
+    public static Matrix id(int r, int c){
         Matrix matrix2 = new Matrix(r,c);
         for (int i = 0; i < r; i++) {
             for (int j = 0; j < c; j++) {
@@ -131,7 +161,7 @@ public class Matrix {
         return matrix2;
     }
     
-    public Matrix seq(int x, int y){
+    public static Matrix seq(int x, int y){
         if(y > x){
             Matrix m = new Matrix(1,y-x+1);
             for (int i = x; i < y; i++) {

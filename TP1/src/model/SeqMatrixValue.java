@@ -10,10 +10,10 @@ package model;
  * @author wendell
  */
 public class SeqMatrixValue extends MatrixValue{
-    IntValue from,to;
+    Value<?> from,to;
     boolean inverted;
 
-    public SeqMatrixValue(IntValue from, IntValue to, boolean inverted, int line) {
+    public SeqMatrixValue(Value<?> from, Value<?> to, boolean inverted, int line) {
         super(line);
         this.from = from;
         this.to = to;
@@ -22,6 +22,19 @@ public class SeqMatrixValue extends MatrixValue{
     
     @Override
     public Matrix value() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Value<?> v1 = (from instanceof Variable ? (Variable) from.value() : from);
+        Value<?> v2 = (to instanceof Variable ? (Variable) to.value() : to);
+        
+        if (v1 instanceof ConstIntValue && v2 instanceof ConstIntValue){
+            if(inverted){
+                int r = ((ConstIntValue)v1).value();
+                int c = ((ConstIntValue)v2).value();
+                return Matrix.seq(r, c);
+            }
+        }else{
+            // FIXME: Erro de tipos!
+            return null;
+        }
+        return null;
     }
 }

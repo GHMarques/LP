@@ -10,9 +10,9 @@ package model;
  * @author wendell
  */
 public class NullMatrixValue extends MatrixValue{
-    private int rows,cols;
+    private Value<?> rows,cols;
 
-    public NullMatrixValue(int rows, int cols, int line) {
+    public NullMatrixValue(Value<?> rows, Value<?> cols, int line) {
         super(line);
         this.rows = rows;
         this.cols = cols;
@@ -20,7 +20,18 @@ public class NullMatrixValue extends MatrixValue{
 
     @Override
     public Matrix value() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Value<?> v1 = (rows instanceof Variable ? (Variable) rows.value() : rows);
+        Value<?> v2 = (cols instanceof Variable ? (Variable) cols.value() : cols);
+        
+        if (v1 instanceof ConstIntValue && v2 instanceof ConstIntValue){
+                int r = ((ConstIntValue)v1).value();
+                int c = ((ConstIntValue)v2).value();
+                return Matrix._null(r, c);
+        }else{
+            // FIXME: Erro de tipos!
+            return null;
+        }
+        
     }
     
 }

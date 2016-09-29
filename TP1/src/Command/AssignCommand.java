@@ -9,6 +9,7 @@ import model.ConstIntValue;
 import model.IntValue;
 import model.MatrixValue;
 import model.RefMatrixValue;
+import model.StringValue;
 import model.Value;
 import model.Variable;
 
@@ -27,13 +28,14 @@ public class AssignCommand extends Command{
     }
     
     public void execute(){
-        Value<?> v = (val instanceof Variable ? (Variable) val.value():val );
+        Value<?> v = (val instanceof Variable ? ((Variable) val).value():val );
+        
         if( v instanceof IntValue){
-            ConstIntValue c = new ConstIntValue( ((IntValue) v).value(), val.line());//olhar de novo se e esse val.line()
+            ConstIntValue c = new ConstIntValue( ((IntValue) v).value(), this.line());//olhar de novo se e esse val.line()            
             var.setValue(c);
         }else if(v instanceof MatrixValue){
-            RefMatrixValue ref = new RefMatrixValue( ((MatrixValue) v).value(), val.line()/*...*/);
-            
+            RefMatrixValue ref = new RefMatrixValue( ((MatrixValue) v).value(), this.line());
+            var.setValue(ref);
         }else{
             //Tipos invalidos e aborta
         }

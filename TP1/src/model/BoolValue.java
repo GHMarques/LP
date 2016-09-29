@@ -9,12 +9,12 @@ package model;
  *
  * @author wendell
  */
-public abstract class BoolValue extends Value<boolean>{
+public abstract class BoolValue extends Value<Boolean>{
 
     public BoolValue(int l) {
         super(l);
     }
     
-    public abstract boolean value();
+    public abstract Boolean value();
     
 }

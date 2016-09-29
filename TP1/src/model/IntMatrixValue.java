@@ -10,9 +10,9 @@ package model;
  * @author wendell
  */
 public abstract class IntMatrixValue extends IntValue{
-    protected Matrix m;
+    protected Value<?> m;
 
-    public IntMatrixValue(Matrix m, int line) {
+    public IntMatrixValue(Value<?> m, int line) {
         super(line);
         this.m = m;
     }

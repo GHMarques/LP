@@ -5,18 +5,13 @@
  */
 package Command;
 
-import model.IntValue;
-import model.Matrix;
-import model.MatrixValue;
-import model.StringValue;
-import model.Value;
-import model.Variable;
+import model.*;
 
 /**
  *
  * @author alunoccc
  */
-public class ShowCommand extends Command{
+public class ShowCommand extends Command {
     private Value<?> value;
     public ShowCommand(Value<?> value, int line ){
         super(line);
@@ -24,28 +19,19 @@ public class ShowCommand extends Command{
     }
     public void execute()
     {
-        Value<?> val = value;
-        if(val instanceof Variable){
-            Variable var = (Variable) val;
-            val = val.value();
-        }
-        if(val instanceof IntValue){
-            IntValue iv = (IntValue) val;
-            int n = iv.value();
+        Value<?> v = (value instanceof Variable ? ((Variable) value).value() : value);
+        
+        if (v instanceof IntValue){
+            int n = ((IntValue) v).value();
             System.out.println(n);
-        }else if(val instanceof StringValue){
-            String sv = (StringValue) val;
-            String S = sv.value();
-            System.out.println(S);
-        }
-        else if(val instanceof MatrixValue){
-            MatrixValue mv = (MatrixValue) val;
-            Matrix m = mv.value();
+        }else if (v instanceof StringValue){
+            String s = ((StringValue) v).value();
+            System.out.println(s);
+        } else if (v instanceof MatrixValue){
+            Matrix m = ((MatrixValue) v).value();
             m.show();
         }else{
-            //imprime tipos invalidos
-            System.exit(1);
+            //Tipos invalidos e aborta
         }
-        
     }
 }

@@ -9,7 +9,7 @@ package model;
  *
  * @author wendell
  */
-public class ConstStringValue extends StringValue{
+public class ConstStringValue extends StringValue {
     private String value;
 
     public ConstStringValue(String value, int line) {
@@ -19,7 +19,7 @@ public class ConstStringValue extends StringValue{
     
     @Override
     public String value() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return value;
     }
     
 }
