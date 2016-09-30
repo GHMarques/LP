@@ -1,0 +1,36 @@
+OK_	<statements> ::= <statement> { <statement> }
+OK_	<statement> ::= <show> | <assign> | <if> | <while> | <for>
+OK_	<show> ::= show '(' <text> ')' ';'
+OK_	<expr> ::= <term> [ ('+' | '-') <term> ]
+OK_	<input> ::= input '(' <text> ')'
+OK_	<assign> ::= <var> '=' <expr> ';'
+OK_	<term> ::= <factor> [ ('*' | '/' | '%') <factor> ]
+OK_	<for> ::= for <var> '=' <value> <statements> end
+OK_	<while> ::= while <boolexpr> <statements> end
+OK_	<boolop> ::= '==' | '!=' | '<' | '>' | '<=' | '>='
+
+--> <if> ::= if <boolexpr> <statements> [ else <statements> ] end
+<text> ::= { <string> | <expr> }
+--> <boolexpr> ::= <expr> <boolop> <expr> { ('&' | '|') <boolexpr> }
+
+
+<factor> ::= <number> | <input> | <value> | '(' <expr> ')'
+<value> ::= (<var> | <gen>)
+	{ '.' (<opposed> | <transposed> | <sum> | <mul>) }
+	[ '.' (<size> | <rows> | <cols> | <val>) ]
+
+<opposed> ::= opposed '(' ')'
+<transposed> ::= transposed '(' ')'
+<sum> ::= sum '(' <expr> ')'
+<mul> ::= mul '(' <expr> ')'
+<size> ::= size '(' ')'
+<rows> ::= rows '(' ')'
+<cols> ::= cols '(' ')'
+<val> ::= value '(' <expr> ',' <expr> ')'
+<gen> ::= '[' ']' '.' (<null> | <fill> | <rand> | <id> | <seq> | <iseq>)
+<null> ::= null '(' <expr> ',' <expr> ')'
+<fill> ::= fill '(' <expr> ',' <expr> ',' <expr> ')'
+<rand> ::= rand '(' <expr> ',' <expr> ')'
+<id> ::= id '(' <expr> ',' <expr> ')'
+<seq> ::= seq '(' <expr> ',' <expr> ')'
+<iseq> ::= iseq '(' <expr> ',' <expr> ')'
