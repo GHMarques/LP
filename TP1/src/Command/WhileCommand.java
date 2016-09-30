@@ -22,6 +22,7 @@ public class WhileCommand extends Command{
     }
     
     void execute(){
-        
+       while(this.expr.value())
+            this.cmd.execute();
     }
 }

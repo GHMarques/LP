@@ -71,16 +71,13 @@ public class SyntaticalAnalysis {
         }else if(current.type == TokenType.VAR){
             return procAssign();
         }else if(current.type == TokenType.FOR){
-            procFor();
-            return null;
+            return procFor();            
         }else if(current.type == TokenType.WHILE){//<--
-            procWhile();
-            return null;
+            return procWhile();            
         }else if(current.type == TokenType.IF){//<--
-            procIF();
-            return null;
+            return procIF();            
         }else{
-            abortUnexpectToken();
+            abortUnexpectToken();    
             return null;
         }
     }
@@ -124,14 +121,12 @@ public class SyntaticalAnalysis {
     //<if> ::= if <boolexpr> <statements> [ else <statements> ] end
     private IfCommand procIF() throws IOException{
         matchToken(TokenType.IF);
-        DualBoolExpr dbexpr = procBoolExpression();
+        BoolValue dbexpr = procBoolExpression();        
         CommandBlock cb_if = procStatements();
-        IfCommand if_cmd;
-                
+        IfCommand if_cmd;      
         if (current.type == TokenType.ELSE) {
             matchToken(TokenType.ELSE);
             CommandBlock cb_else = procStatements();
-
             if_cmd = new IfCommand(dbexpr, cb_if,cb_else, la.getLine());
             matchToken(TokenType.END);
             return if_cmd;
@@ -143,29 +138,33 @@ public class SyntaticalAnalysis {
     }
 
     //<boolexpr> ::= <expr> <boolop> <expr> { ('&' | '|') <boolexpr> } 
-    private DualBoolExpr procBoolExpression() throws IOException{//<<<<< REVER
-        Value<?> expr1 = procExpr();
+    private BoolValue procBoolExpression() throws IOException{//<<<<< REVER
+        Value<?> expr1 = procExpr();        
         RelOp op = procBoolOp();
         Value<?> expr2 = procExpr();
         
-        CompareBoolValue cbv_1 = new CompareBoolValue(op,expr1,expr2,la.getLine());
-        DualBoolExpr dbexpr = null;
-        
+        CompareBoolValue cbv = new CompareBoolValue(op,expr1,expr2,la.getLine());
+        DualBoolExpr dbe = null;
+        BoolValue tmp = null;
+        BoolOp bo;
         if(current.type == TokenType.AND || current.type == TokenType.OR){
             while(current.type == TokenType.AND ||
                     current.type == TokenType.OR){
                 if(current.type == TokenType.AND){
                     matchToken(TokenType.AND);
-                    DualBoolExpr dbexpr_2 = procBoolExpression();
+                    bo = BoolOp.And;
+                    tmp = procBoolExpression();
                 }
-                else 
+                else {
                     matchToken(TokenType.OR);
-                procBoolExpression();
-            }
-        }else{
-            dbexpr = new DualBoolExpr(null, cbv_1, null, la.getLine());
+                    bo = BoolOp.And;
+                    tmp = procBoolExpression();
+                }
+                dbe = new DualBoolExpr(bo, dbe, tmp, la.getLine());
+            }    
+            return dbe;
         }
-        return dbexpr;
+        return cbv;
     }
 
     private RelOp procBoolOp() throws IOException {
@@ -243,8 +242,6 @@ public class SyntaticalAnalysis {
 
     // <term> ::= <factor> [ ('*' | '/' | '%') <factor> ]
     private Value<?> procTerm() throws IOException {
-
-        // FIXME: [ ('*' | '/' | '%') <factor> ]_OK
         Value<?> fact1 = procFactor();
         if (current.type == TokenType.TIMES || current.type == TokenType.DIV || current.type == TokenType.MOD) {
             IntOp op = null;
@@ -271,7 +268,6 @@ public class SyntaticalAnalysis {
 
     // <factor> ::= <number> | <input> | <value> | '(' <expr> ')'
     private Value<?> procFactor() throws IOException {
-        // FIXME: <number> | <value> | '(' <expr> ')'
         System.out.println("Next: (" + current.token + ", " + current.type + ")");
         if (current.type == TokenType.NUMBER) {
             Integer n = procNumber();
@@ -279,19 +275,17 @@ public class SyntaticalAnalysis {
             return cv;
         } else if (current.type == TokenType.INPUT) {
             return procInput();
-        }else
+        }else if(current.type == TokenType.VALUE ||
+                 current.type == TokenType.VAR)
         {
             return procValue();
-        }
-        /*else if(current.type == TokenType.VALUE){
-            return procValue();
-        }else {
+        }else if(current.type == TokenType.OPEN_PAR){
             matchToken(TokenType.OPEN_PAR);
-            procExpr();
+            Value<?> expr = procExpr();
             matchToken(TokenType.CLOSE_PAR);
+            return expr;
         }
         return null;
-            */
     }
 
 
@@ -343,7 +337,7 @@ public class SyntaticalAnalysis {
                 break;
             }else if(current.type == TokenType.SUM){
 //                value = procSum(value);
-            }else if(current.type == TokenType.TRANSPPOSED){
+            }else if(current.type == TokenType.TRANSPOSED){
 //                value = procTranspossed(value);
             }else{
                 abortUnexpectToken();
@@ -353,38 +347,70 @@ public class SyntaticalAnalysis {
         return null;//value<?> <--
     }
 
-    private void procOpposed(Value<?> a) throws IOException {
-        Value<?> v = procText();
+    //<opposed> ::= opposed '(' ')'
+    private OpposedMatrixValue procOpposed(Value<?> matrix) throws IOException {
         matchToken(TokenType.OPPOSED);
         matchToken(TokenType.OPEN_PAR);
         matchToken(TokenType.CLOSE_PAR);
-        OpposedMatrixValue m = new OpposedMatrixValue((MatrixValue) v,la.getLine());
+        OpposedMatrixValue omv = new OpposedMatrixValue(matrix,la.getLine());
+        return omv;
+    }
+    
+    
+    //<transposed> ::= transposed '(' ')'
+    private TransposedMatrixValue procTransposed(Value<?> matrix) throws IOException {
+        matchToken(TokenType.TRANSPOSED);
+        matchToken(TokenType.OPEN_PAR);
+        matchToken(TokenType.CLOSE_PAR);
+        TransposedMatrixValue tmv = new TransposedMatrixValue(matrix,la.getLine());
+        return tmv;
     }
 
     //<mul> ::= mul '(' <value> |  <expr  ')'
-    private MulMatrixValue procMUL(Value<?> m) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private MulMatrixValue procMUL(Value<?> m) throws IOException {
+        matchToken(TokenType.MUL);
+        matchToken(TokenType.OPEN_PAR);
+        Value<?> m2 = procExpr();
+        matchToken(TokenType.CLOSE_PAR);
+        MulMatrixValue mmv = new MulMatrixValue(m, m2, la.getLine());
+        return mmv;
     }
-
-    private void procSize(Value<?> m) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     
+    //<sum> ::= sum '(' <expr> ')'
+    private SumMatrixValue procSUM(Value<?> m1) throws IOException {
+        matchToken(TokenType.SUM);
+        matchToken(TokenType.OPEN_PAR);
+        Value<?> m2 = procExpr();
+        matchToken(TokenType.CLOSE_PAR);
+        SumMatrixValue smv = new SumMatrixValue(m1, m2, la.getLine());
+        return smv;
+    }
+
+    //<size> ::= size '(' ')'
+    private SizeIntMatrixValue procSize(Value<?> m) throws IOException {
+        matchToken(TokenType.SIZE);
+        matchToken(TokenType.OPEN_PAR);
+        matchToken(TokenType.CLOSE_PAR);
+        SizeIntMatrixValue smv = new SizeIntMatrixValue(m, la.getLine());
+        return smv;
+    }
+
     //<val> ::= value '(' <expr> ',' <expr> ')'
-    private void procVal() throws IOException {
+    private Value<?> procVal(Value<?> matrix) throws IOException {
         matchToken(TokenType.VALUE);
         matchToken(TokenType.OPEN_PAR);
-        procExpr();
+        Value<?> expr1 = procExpr();
         matchToken(TokenType.COMMA);
-        procExpr();
+        Value<?> expr2 = procExpr();
         matchToken(TokenType.CLOSE_PAR);
+        ValueIntMatrixValue vimv = new ValueIntMatrixValue(matrix, expr1, expr2, la.getLine());
+        return vimv;
     }
 
     //<while> ::= while <boolexpr> <statements> end
     private WhileCommand procWhile() throws IOException {
         matchToken(TokenType.WHILE);
-        DualBoolExpr dbexpr = procBoolExpression();
+        BoolValue dbexpr = procBoolExpression();
         CommandBlock cb = procStatements();
         matchToken(TokenType.END);
         WhileCommand wc = new WhileCommand(dbexpr, cb, la.getLine());
@@ -462,8 +488,105 @@ public class SyntaticalAnalysis {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private void procCols(Value<?> m) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    //<cols> ::= cols '(' ')'
+    private ColsIntMatrixValue procCols(Value<?> matrix) throws IOException {
+        matchToken(TokenType.COLS);
+        matchToken(TokenType.OPEN_PAR);
+        matchToken(TokenType.CLOSE_PAR);
+        ColsIntMatrixValue cmv = new ColsIntMatrixValue(matrix,la.getLine());
+        return cmv;
     }
-
+    
+    //<rows> ::= rows '(' ')'
+    private RowsIntMatrixValue procRows(Value<?> matrix) throws IOException {
+        matchToken(TokenType.ROWS);
+        matchToken(TokenType.OPEN_PAR);
+        matchToken(TokenType.CLOSE_PAR);
+        RowsIntMatrixValue rmv = new RowsIntMatrixValue(matrix,la.getLine());
+        return rmv;
+    }
+    
+    //<null> ::= null '(' <expr> ',' <expr> ')'
+    private NullMatrixValue procNull() throws IOException {
+        matchToken(TokenType.NULL);
+        matchToken(TokenType.OPEN_PAR);
+        Value<?> expr1 = procExpr();
+        matchToken(TokenType.COMMA);
+        Value<?> expr2 = procExpr();
+        matchToken(TokenType.CLOSE_PAR);
+        NullMatrixValue nmv = new NullMatrixValue(expr1, expr2, la.getLine());
+        return nmv;
+    }
+    
+    //<fill> ::= fill '(' <expr> ',' <expr> ',' <expr> ')'
+    private FillMatrixValue procFill() throws IOException {
+        matchToken(TokenType.FILL);
+        matchToken(TokenType.OPEN_PAR);
+        Value<?> expr1 = procExpr();
+        matchToken(TokenType.COMMA);
+        Value<?> expr2 = procExpr();
+        matchToken(TokenType.COMMA);
+        Value<?> expr3 = procExpr();
+        matchToken(TokenType.CLOSE_PAR);
+        FillMatrixValue fmv = new FillMatrixValue(expr1, expr2, expr3, la.getLine());
+        return fmv;
+    }
+    
+    //<rand> ::= rand '(' <expr> ',' <expr> ')'
+    private RandMatrixValue procRand() throws IOException {
+        matchToken(TokenType.RAND);
+        matchToken(TokenType.OPEN_PAR);
+        Value<?> expr1 = procExpr();
+        matchToken(TokenType.COMMA);
+        Value<?> expr2 = procExpr();
+        matchToken(TokenType.CLOSE_PAR);
+        RandMatrixValue rmv = new RandMatrixValue(expr1, expr2, la.getLine());
+        return rmv;
+    }
+    
+    //<id> ::= id '(' <expr> ',' <expr> ')'
+    private IdMatrixValue procId() throws IOException {
+        matchToken(TokenType.ID);
+        matchToken(TokenType.OPEN_PAR);
+        Value<?> expr1 = procExpr();
+        matchToken(TokenType.COMMA);
+        Value<?> expr2 = procExpr();
+        matchToken(TokenType.CLOSE_PAR);
+        IdMatrixValue idmv = new IdMatrixValue(expr1, expr2, la.getLine());
+        return idmv;
+    }
+    
+    //<seq> ::= seq '(' <expr> ',' <expr> ')'
+    private SeqMatrixValue procSeq() throws IOException {
+        matchToken(TokenType.SEQ);
+        matchToken(TokenType.OPEN_PAR);
+        Value<?> expr1 = procExpr();
+        matchToken(TokenType.COMMA);
+        Value<?> expr2 = procExpr();
+        matchToken(TokenType.CLOSE_PAR);
+        SeqMatrixValue seqmv = new SeqMatrixValue(expr1, expr2, false, la.getLine());
+        return seqmv;
+    }
+    
+    //<iseq> ::= iseq '(' <expr> ',' <expr> ')'
+    private SeqMatrixValue procISeq() throws IOException {
+        matchToken(TokenType.ISEQ);
+        matchToken(TokenType.OPEN_PAR);
+        Value<?> expr1 = procExpr();
+        matchToken(TokenType.COMMA);
+        Value<?> expr2 = procExpr();
+        matchToken(TokenType.CLOSE_PAR);
+        SeqMatrixValue seqmv = new SeqMatrixValue(expr1, expr2, true, la.getLine());
+        return seqmv;
+    }
+    
+    //<sum> ::= sum '(' <expr> ')'
+    private SumMatrixValue procSum(Value<?> matriz_1) throws IOException {
+        matchToken(TokenType.SUM);
+        matchToken(TokenType.OPEN_PAR);
+        Value<?> matriz_2 = procExpr();
+        matchToken(TokenType.CLOSE_PAR);
+        SumMatrixValue smv = new SumMatrixValue(matriz_1, matriz_2,la.getLine());
+        return smv;
+    }
 }

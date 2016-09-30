@@ -31,7 +31,7 @@ public class AssignCommand extends Command{
         Value<?> v = (val instanceof Variable ? ((Variable) val).value():val );
         
         if( v instanceof IntValue){
-            ConstIntValue c = new ConstIntValue( ((IntValue) v).value(), this.line());//olhar de novo se e esse val.line()            
+            ConstIntValue c = new ConstIntValue( ((IntValue) v).value(), this.line());         
             var.setValue(c);
         }else if(v instanceof MatrixValue){
             RefMatrixValue ref = new RefMatrixValue( ((MatrixValue) v).value(), this.line());

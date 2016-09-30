@@ -28,8 +28,8 @@ public class CommandBlock extends Command{
     }
     
     public void execute(){
-        for (int i = 0; i < commands.size(); i++) {
-            Command c = commands.get(i);
+        for (int i = 0; i < this.commands.size(); i++) {
+            Command c = this.commands.get(i);
             c.execute();
         }
     }

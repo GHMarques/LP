@@ -29,11 +29,14 @@ public class SeqMatrixValue extends MatrixValue{
             if(inverted){
                 int r = ((ConstIntValue)v1).value();
                 int c = ((ConstIntValue)v2).value();
+                return Matrix.iseq(r, c);
+            }else{
+                int r = ((ConstIntValue)v1).value();
+                int c = ((ConstIntValue)v2).value();
                 return Matrix.seq(r, c);
             }
         }else{
             // FIXME: Erro de tipos!
-            return null;
         }
         return null;
     }

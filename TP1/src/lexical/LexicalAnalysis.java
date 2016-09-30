@@ -108,7 +108,7 @@ public class LexicalAnalysis implements AutoCloseable {
                     break;
                 case 5:
                     if(c == '='){
-                        lex.token += c;
+                        lex.token += (char)c;
                         estado = 8;
                     }
                     else{

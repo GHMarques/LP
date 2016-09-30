@@ -1,3 +1,20 @@
+#ASSIGN
 x = input("Entre com um valor: ");
 y = x % 2;
-show(y);
+show(7*7);
+k = (9/9);
+show(k);
+
+#IF
+if y==0
+show(y+3);
+else show("resto da divisao nao e zero");
+end
+
+#WHILE  (x>0)da erro, (x > 0 | x> 0) nao
+x = 3;
+show(x);
+while x > 0
+x = x-1;
+end
+show(x);

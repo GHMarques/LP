@@ -32,5 +32,20 @@ OK_	<mul> ::= mul '(' <expr> ')'
 	{ '.' (<opposed> | <transposed> | <sum> | <mul>) }
 	[ '.' (<size> | <rows> | <cols> | <val>) ]
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <gen> ::= '[' ']' '.' (<null> | <fill> | <rand> | <id> | <seq> | <iseq>)
 

@@ -30,7 +30,11 @@ public class IfCommand extends Command{
     }
     
     public void execute(){
-        
+        if(this.expr.value())
+            this.then.execute();
+        else
+            if(this._else != null)
+                  this._else.execute();
     }
     
 }

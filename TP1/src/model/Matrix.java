@@ -100,9 +100,9 @@ public class Matrix {
     }
     
     public Matrix mul(Matrix x, Matrix y){
-        if(x.rows() == y.cols())
-            if(x.cols == y.rows){
-                Matrix m = new Matrix(x.cols(),y.rows());
+        if(x.rows() == y.cols())//Na especificacao isso tem q bater
+            if(x.cols == y.rows){//e isso tbm
+                Matrix m = new Matrix(x.rows(),y.cols());
                 //implementar
             }
         return null;
@@ -164,19 +164,21 @@ public class Matrix {
     public static Matrix seq(int x, int y){
         if(y > x){
             Matrix m = new Matrix(1,y-x+1);
-            for (int i = x; i < y; i++) {
-                m.matrix[1][i-1] = i;
+            int c = x;
+            for (int i = 0; i < y-x; i++) {
+                m.matrix[1][i] = c++;
             }
             return m;
         }
         return null;
     }
     
-    public Matrix iseq(int x, int y){
+    public static Matrix iseq(int x, int y){
         if(y < x){
             Matrix m = new Matrix(1,x-y+1);
-            for (int i = x; i > y; i--) {
-                m.matrix[1][i-1] = i;
+            int c = x;
+            for (int i = x; i > x-y+1; i--) {
+                m.matrix[1][i-1] = c--;
             }
             return m;
         }

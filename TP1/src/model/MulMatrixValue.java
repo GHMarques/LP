@@ -22,6 +22,20 @@ public class MulMatrixValue extends MatrixValue{
 
     @Override
     public Matrix value() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Value<?> v1 = (m instanceof Variable ? (Variable) m.value() : m);
+        Value<?> v2 = (v instanceof Variable ? (Variable) v.value() : v);
+        
+        if (v1 instanceof MatrixValue && v2 instanceof MatrixValue){
+            Matrix x = ((MatrixValue) v1).value();
+            Matrix y = ((MatrixValue) v2).value();
+            return x.mul(x, y);
+        }else if (v1 instanceof MatrixValue && v2 instanceof ConstIntValue){
+            Matrix x = ((MatrixValue) v1).value();
+            int y = ((ConstIntValue) v2).value();
+            return x.mul(x, y);
+        }else {
+            // FIXME: Erro de tipos!
+            return null;
+        }
     }
 }

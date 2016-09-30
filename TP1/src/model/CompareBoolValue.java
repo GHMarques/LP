@@ -24,7 +24,35 @@ public class CompareBoolValue extends BoolValue{
     
     @Override
     public Boolean value() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Value<?> v1 = (this.left instanceof Variable ? ((Variable)this.left).value() : this.left);
+        Value<?> v2 = (this.right instanceof Variable ? ((Variable)this.right).value() : this.right);
+                
+        if (!(v1 instanceof IntValue && v2 instanceof IntValue)) {
+            // Tipos invalidos
+            // abortar!
+            return null;
+        }
+        
+        int i1 = ((IntValue) v1).value();
+        int i2 = ((IntValue) v2).value();
+        
+        switch (this.op) {
+            case Equal :
+                return (i1 == i2);
+            case NotEqual:
+                return (i1 != i2);
+            case GreaterThan:
+                return (i1 > i2);
+            case GreaterEqual:
+                return (i1 >= i2);
+            case LowerThan:
+                return (i1 < i2);
+            case LowerEqual:
+                return (i1 <= i2);
+            default:
+                return null;
+        }
+
     }
             
 }

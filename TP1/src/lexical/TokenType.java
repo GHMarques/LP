@@ -32,7 +32,7 @@ public enum TokenType {
     FILL,
     ID,
     OPPOSED,
-    TRANSPPOSED,
+    TRANSPOSED,
     SUM,
     MUL,
     SIZE,

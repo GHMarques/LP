@@ -12,7 +12,7 @@ package model;
 public class SumMatrixValue extends MatrixValue{
     private Value<?> m1, m2;
 
-    public SumMatrixValue(Value<?> m1, MatrixValue m2, int line) {
+    public SumMatrixValue(Value<?> m1, Value<?> m2, int line) {
         super(line);
         this.m1 = m1;
         this.m2 = m2;
