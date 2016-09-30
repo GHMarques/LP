@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package lexical;
 
 import Command.Command;
@@ -50,7 +45,7 @@ public class SyntaticalAnalysis {
 
     
     //<statements> ::= <statement> { <statement> }
-    private CommandBlock procStatements() throws IOException{//revisar
+    private CommandBlock procStatements() throws IOException{
         CommandBlock cb = new CommandBlock();
 
         Command c = procStatement();
@@ -58,8 +53,8 @@ public class SyntaticalAnalysis {
 
         while(current.type == TokenType.SHOW ||
               current.type == TokenType.VAR ||
-                current.type == TokenType.IF ||//<--
-                current.type == TokenType.WHILE ||//<--
+                current.type == TokenType.IF ||
+                current.type == TokenType.WHILE ||
                current.type == TokenType.FOR){
                c = procStatement();
                cb.addCommand(c);
@@ -102,7 +97,6 @@ public class SyntaticalAnalysis {
     }
 
     private Map<String,Variable> myvariables = new HashMap<String,Variable>();
-
     Variable procVar() throws IOException{
         String varName = current.token;
         matchToken(TokenType.VAR);
@@ -128,64 +122,88 @@ public class SyntaticalAnalysis {
 
 
     //<if> ::= if <boolexpr> <statements> [ else <statements> ] end
-    void procIF() throws IOException{
-//    private IfCommand procIF() throws IOException{
+    private IfCommand procIF() throws IOException{
         matchToken(TokenType.IF);
-        procBoolExpression();
-        //DualBoolExpr expr = procBoolExpression();
-        procStatements();
-        //CommandBlock cb = procStatements();
-        //CommandBlock cb_else;
-        if(current.type == TokenType.ELSE){
+        DualBoolExpr dbexpr = procBoolExpression();
+        CommandBlock cb_if = procStatements();
+        IfCommand if_cmd;
+                
+        if (current.type == TokenType.ELSE) {
             matchToken(TokenType.ELSE);
-            procStatements();
-            //cb_else  = procStatements();
-        }
-        matchToken(TokenType.END);
+            CommandBlock cb_else = procStatements();
 
-        //IfCommand if_else = new IfCommand();
-        //return if_else;
-    }
-
-    void procBoolExpression() throws IOException{
-        procIntExpr();
-        procBoolOp();
-        procIntExpr();
-        while(current.type == TokenType.AND ||
-                current.type == TokenType.OR){
-            if(current.type == TokenType.AND)
-                matchToken(TokenType.AND);
-            else
-                matchToken(TokenType.OR);
-            procBoolExpression();
+            if_cmd = new IfCommand(dbexpr, cb_if,cb_else, la.getLine());
+            matchToken(TokenType.END);
+            return if_cmd;
+        } else {
+            if_cmd = new IfCommand(dbexpr, cb_if, la.getLine());
+            matchToken(TokenType.END);
+            return if_cmd;
         }
     }
 
-    private void procBoolOp() throws IOException {//revisar
+    //<boolexpr> ::= <expr> <boolop> <expr> { ('&' | '|') <boolexpr> } 
+    private DualBoolExpr procBoolExpression() throws IOException{//<<<<< REVER
+        Value<?> expr1 = procExpr();
+        RelOp op = procBoolOp();
+        Value<?> expr2 = procExpr();
+        
+        CompareBoolValue cbv_1 = new CompareBoolValue(op,expr1,expr2,la.getLine());
+        DualBoolExpr dbexpr = null;
+        
+        if(current.type == TokenType.AND || current.type == TokenType.OR){
+            while(current.type == TokenType.AND ||
+                    current.type == TokenType.OR){
+                if(current.type == TokenType.AND){
+                    matchToken(TokenType.AND);
+                    DualBoolExpr dbexpr_2 = procBoolExpression();
+                }
+                else 
+                    matchToken(TokenType.OR);
+                procBoolExpression();
+            }
+        }else{
+            dbexpr = new DualBoolExpr(null, cbv_1, null, la.getLine());
+        }
+        return dbexpr;
+    }
+
+    private RelOp procBoolOp() throws IOException {
+        RelOp op = null;
         if(current.type == TokenType.EQUAL){
             matchToken(TokenType.EQUAL);
+            op = RelOp.Equal;
         }else if(current.type == TokenType.DIFF){
             matchToken(TokenType.DIFF);
+            op = RelOp.NotEqual;
         }else if(current.type == TokenType.LOWER){
             matchToken(TokenType.LOWER);
+            op = RelOp.LowerThan;
         }else if(current.type == TokenType.GREATER){
             matchToken(TokenType.GREATER);
+            op = RelOp.GreaterThan;
         }else if(current.type == TokenType.LOWER_EQUAL){
             matchToken(TokenType.LOWER_EQUAL);
+            op = RelOp.LowerEqual;
         }else if(current.type == TokenType.GREATER_EQUAL){
             matchToken(TokenType.GREATER_EQUAL);
+            op = RelOp.GreaterEqual;
         }else{
             abortUnexpectToken();
         }
+        return op;
     }
 
-    private void procFor() throws IOException {
+    //<for> ::= for <var> '=' <value> <statements> end
+    private ForCommand procFor() throws IOException {
         matchToken(TokenType.FOR);
         Variable var = procVar();
         matchToken(TokenType.ASSIGN);
         Value<?> val = procValue();
-        procStatements();
+        CommandBlock cb = procStatements();
         matchToken(TokenType.END);
+        ForCommand _for =  new ForCommand(var, val, cb, la.getLine());
+        return _for;
     }
 
     // <assign:> ::= <var> '=' <expr> ';'
@@ -291,33 +309,51 @@ public class SyntaticalAnalysis {
     //                  { '.' (<opposed> | <transposed> | <sum> | <mul>) }
     //                  [ '.' (<size> | <rows> | <cols> | <val>) ]
     public Value<?> procValue() throws IOException {//revisar
+        Value<?> value = null;
         if(current.type == TokenType.VAR){
             Variable var = procVar();
             return var;
         }else if(current.type == TokenType.OPEN_BRA){
-            procGen();
+//            MatrixValue m = procGen();
+//            return m;
         }else {
             abortUnexpectToken();
         }
-
+        
         while(current.type == TokenType.DOT){
             matchToken(TokenType.DOT);
             if(current.type == TokenType.OPPOSED){
-                procOpposed();
+//                matrix = procOpposed(matrix);
             }else if(current.type == TokenType.MUL){
-                procMUL();
+                value = procMUL(value);
             }else if(current.type == TokenType.SIZE){
-                procSize();
+//                value = procSize(value);
                 break;
             }else if(current.type == TokenType.VALUE){
-                procVal();
-            }else abortUnexpectToken();
+//                value = procVal(value);
+                break;
+            }else if(current.type == TokenType.COLS){
+//                value = procCols(value);
+                break;
+            }else if(current.type == TokenType.ROWS){
+//                value = procRows(value);
+                break;
+            }else if(current.type == TokenType.SIZE){
+//                value = procSize(value);
+                break;
+            }else if(current.type == TokenType.SUM){
+//                value = procSum(value);
+            }else if(current.type == TokenType.TRANSPPOSED){
+//                value = procTranspossed(value);
+            }else{
+                abortUnexpectToken();
+            }
         }
 
         return null;//value<?> <--
     }
 
-    private void procOpposed() throws IOException {
+    private void procOpposed(Value<?> a) throws IOException {
         Value<?> v = procText();
         matchToken(TokenType.OPPOSED);
         matchToken(TokenType.OPEN_PAR);
@@ -326,11 +362,11 @@ public class SyntaticalAnalysis {
     }
 
     //<mul> ::= mul '(' <value> |  <expr  ')'
-    private MulMatrixValue procMUL() {
+    private MulMatrixValue procMUL(Value<?> m) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private void procSize() {
+    private void procSize(Value<?> m) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -345,18 +381,42 @@ public class SyntaticalAnalysis {
         matchToken(TokenType.CLOSE_PAR);
     }
 
-    private void procWhile() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    //<while> ::= while <boolexpr> <statements> end
+    private WhileCommand procWhile() throws IOException {
+        matchToken(TokenType.WHILE);
+        DualBoolExpr dbexpr = procBoolExpression();
+        CommandBlock cb = procStatements();
+        matchToken(TokenType.END);
+        WhileCommand wc = new WhileCommand(dbexpr, cb, la.getLine());
+        return wc;
     }
 
-    private void procGen() throws IOException {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    //<gen> ::= '[' ']' '.' (<null> | <fill> | <rand> | <id> | <seq> | <iseq>)
+    private Matrix procGen(Value<?> r,Value<?> c, Value<?> v) throws IOException {
         matchToken(TokenType.OPEN_BRA);
         matchToken(TokenType.CLOSE_BRA);
         matchToken(TokenType.DOT);
-//        if(){
-//            
-//        }
+        
+        if(current.type == TokenType.NULL){
+            NullMatrixValue nmv  =  new NullMatrixValue(r,c,la.getLine());
+            return nmv.value();
+        }else if(current.type == TokenType.FILL){
+            FillMatrixValue fmv  =  new FillMatrixValue(r,c,v,la.getLine());
+            return fmv.value();
+        }else if(current.type == TokenType.RAND){
+            RandMatrixValue fmv  =  new RandMatrixValue(r,c,la.getLine());
+            return fmv.value();
+        }else if(current.type == TokenType.ID){
+            IdMatrixValue idmv  =  new IdMatrixValue(r,c,la.getLine());
+            return idmv.value();
+        }else if(current.type == TokenType.SEQ){
+//            SeqMatrixValue seqmv  =  new SeqMatrixValue(r,c,la.getLine());
+//            return seqmv.value();
+        }else if(current.type == TokenType.ISEQ){
+//            IeqMatrixValue iseqmv  =  new IeqMatrixValue(r,c,la.getLine());
+//            return iseqmv.value();
+        }
+        return null;
     }
     
     // <text> ::= { <string> | <expr> }
@@ -402,7 +462,7 @@ public class SyntaticalAnalysis {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private void procIntExpr() {
+    private void procCols(Value<?> m) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

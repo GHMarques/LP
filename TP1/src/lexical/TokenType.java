@@ -28,8 +28,6 @@ public enum TokenType {
     WHILE,
     END,
     RAND,
-    SEC,
-    ISEC,
     NULL,
     FILL,
     ID,
@@ -61,5 +59,7 @@ public enum TokenType {
     PLUS,
     MINS,
     TIMES,
-    DIV;
+    DIV,
+    SEQ,
+    ISEQ;
 }

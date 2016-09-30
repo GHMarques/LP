@@ -33,8 +33,8 @@ class SymbolTable {
         
         //MATRIX FUNCTIONS
         st.put("rand", TokenType.RAND);
-        st.put("sec", TokenType.SEC);
-        st.put("isec", TokenType.ISEC);
+        st.put("sec", TokenType.SEQ);
+        st.put("isec", TokenType.ISEQ);
         st.put("null", TokenType.NULL);
         st.put("fill", TokenType.FILL);
         st.put("id", TokenType.ID);
