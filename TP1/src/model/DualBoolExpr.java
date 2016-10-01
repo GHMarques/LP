@@ -22,7 +22,14 @@ public class DualBoolExpr extends BoolValue{
 
     @Override
     public Boolean value() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(op == BoolOp.And){
+            return this.left.value() & this.right.value();
+        }else if(op == BoolOp.Or){
+            return this.left.value() | this.right.value();
+        }else {
+            // FIXME: Erro de tipos!
+            return null;
+        }
     }
 
     

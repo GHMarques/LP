@@ -25,15 +25,6 @@ public class ForCommand extends Command{
     }
     
     public void execute(){
-//        Value<?> v = (value instanceof Variable ? (Variable) value.value() : value);
-//        
-//        if (v instanceof MatrixValue){
-//            Matrix x = ((MatrixValue) v).value();
-//            return x.opposed();
-//        }
-//        
-//        for(::){
-//            this.cmd.execute();
-//        }
+        
     }
 }

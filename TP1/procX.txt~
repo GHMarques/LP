@@ -10,7 +10,7 @@ OK_	<while> ::= while <boolexpr> <statements> end
 OK_	<boolop> ::= '==' | '!=' | '<' | '>' | '<=' | '>='
 OK_	<boolexpr> ::= <expr> <boolop> <expr> { ('&' | '|') <boolexpr> }
 OK_	<if> ::= if <boolexpr> <statements> [ else <statements> ] end
-OK_	<factor> ::= <number> | <input> | <value> | '(' <expr> ')' //--->  olhar o <value | var> e se expande mais dentro do <expr>; 
+OK_	<factor> ::= <number> | <input> | <value> | '(' <expr> ')'
 OK_	<val> ::= value '(' <expr> ',' <expr> ')'
 OK_	<null> ::= null '(' <expr> ',' <expr> ')'
 OK_	<fill> ::= fill '(' <expr> ',' <expr> ',' <expr> ')'
@@ -25,27 +25,14 @@ OK_	<rows> ::= rows '(' ')'
 OK_	<size> ::= size '(' ')'
 OK_	<sum> ::= sum '(' <expr> ')'
 OK_	<mul> ::= mul '(' <expr> ')'
-
 <text> ::= { <string> | <expr> }
-
-<value> ::= (<var> | <gen>)
+OK_	<value> ::= (<var> | <gen>)
 	{ '.' (<opposed> | <transposed> | <sum> | <mul>) }
 	[ '.' (<size> | <rows> | <cols> | <val>) ]
+OK_	<gen> ::= '[' ']' '.' (<null> | <fill> | <rand> | <id> | <seq> | <iseq>)
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-<gen> ::= '[' ']' '.' (<null> | <fill> | <rand> | <id> | <seq> | <iseq>)
 
