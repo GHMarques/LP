@@ -32,6 +32,7 @@ private slots:
     void Banquinho();
     void Flecha();
     void play();
+    void NewGame();
     void mostrarSobre();
     void mostrarFimJogo();
     void trocarModo(QAction* modo);

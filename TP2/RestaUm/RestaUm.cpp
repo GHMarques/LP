@@ -61,6 +61,12 @@ RestaUm::RestaUm(QWidget *parent) :
         SLOT(mostrarSobre()));
 
     QObject::connect(
+        ui->actionNovo,
+        SIGNAL(triggered()),
+        this,
+        SLOT(NewGame()));
+
+    QObject::connect(
         this,
         SIGNAL(gameOver()),
         this,
@@ -108,10 +114,14 @@ void RestaUm::play() {
 
 }
 
+void RestaUm::NewGame() {
+    DrawMap();
+}
+
 void RestaUm::mostrarSobre() {
     QMessageBox::information(this,
        tr("Sobre"),
-       tr("Resta Um\n\nAndrei Rimsa Alvares - andrei@decom.cefetmg.br"));
+       tr("Resta Um\n\nGustavo Marques - gustavo.marques2011@gmail.com\nWendell Ferreira - wendellf.sa@gmail.com"));
 }
 
 void RestaUm::mostrarFimJogo() {
@@ -121,9 +131,8 @@ void RestaUm::mostrarFimJogo() {
 }
 
 void RestaUm::trocarModo(QAction* modo) {
-    if (modo == ui->actionTradicional){
+    if (modo == ui->actionTradicional)
         qDebug() << "modo: tradicional";
-    }
     else if (modo == ui->actionCruz)
         qDebug() << "modo: cruz";
     else if (modo == ui->actionMais)
