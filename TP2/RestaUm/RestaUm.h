@@ -18,6 +18,7 @@ public:
     void DrawMap();
 signals:
     void gameOver();
+    void vitoria();
     //void qtd_pecasChanged();
 private:
     Ui::RestaUm *ui;

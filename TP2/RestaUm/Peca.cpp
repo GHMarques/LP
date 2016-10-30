@@ -18,6 +18,10 @@ void Peca::setState(Peca::State state) {
     }
 }
 
+int Peca::getState(){
+    return (int)m_state;
+}
+
 void Peca::updateIcon() {
     switch (m_state) {
         case Peca::Empty:

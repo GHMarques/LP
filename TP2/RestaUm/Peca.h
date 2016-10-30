@@ -13,7 +13,7 @@ public:
         Selected,
         Jumpable
     };
-
+    int getState();
     explicit Peca(QWidget *parent = 0);
     ~Peca();
 

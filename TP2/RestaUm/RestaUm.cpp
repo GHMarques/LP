@@ -68,6 +68,12 @@ RestaUm::RestaUm(QWidget *parent) :
 
     QObject::connect(
         this,
+        SIGNAL(vitoria()),
+        this,
+        SLOT(mostrarFimJogo()));
+
+    QObject::connect(
+        this,
         SIGNAL(gameOver()),
         this,
         SLOT(mostrarFimJogo()));
@@ -106,12 +112,47 @@ void RestaUm::play() {
     Peca* peca = qobject_cast<Peca*>(
                 QObject::sender());
     if (peca == ui->peca54) {
-        emit gameOver();
+       // emit gameOver();
+            qtd_pecas=1;
     } else {
-        m_pecas[3][3]->setState(Peca::Filled);
-        peca->setState(Peca::Empty);
+        //m_pecas[3][3]->setState(Peca::Filled);
+        //peca->setState(Peca::Empty);
     }
 
+    if(qtd_pecas == 1)
+        emit vitoria();
+    else{
+        bool keep = false;
+        for(int i=0;i<7;i++){
+            for(int j=0;j<7;j++){
+               if(m_pecas[i][j]){
+                   if(m_pecas[i-2][j] || m_pecas[i+2][j] || m_pecas[i][j-2] || m_pecas[i][j+2]){
+                       if( ((i-2) >= 0) && m_pecas[i-2][j]){
+                           if(m_pecas[i-2][j]->getState() == Peca::Empty && m_pecas[i-1][j]->getState() == Peca::Filled){
+                                keep = true;
+                           }
+                       }
+                       if( ((i+2) < 7) && m_pecas[i+2][j]){
+                           if(m_pecas[i+2][j]->getState() == Peca::Empty && m_pecas[i+1][j]->getState() == Peca::Filled){
+                                keep = true;
+                           }
+                       }
+                       if( ((j-2) >= 0) && m_pecas[i][j-2]){
+                           if(m_pecas[i][j-2]->getState() == Peca::Empty && m_pecas[i][j-1]->getState() == Peca::Filled){
+                                keep = true;
+                           }
+                       }
+                       if( ((i+2) < 7 ) && m_pecas[i][j+2]){
+                           if(m_pecas[i][j+2]->getState() == Peca::Empty && m_pecas[i][j+1]->getState() == Peca::Filled){
+                                keep = true;
+                           }
+                       }
+                   }
+               }
+            }
+        }
+        if(!keep) emit gameOver();
+    }
 }
 
 void RestaUm::NewGame() {
@@ -125,9 +166,15 @@ void RestaUm::mostrarSobre() {
 }
 
 void RestaUm::mostrarFimJogo() {
-    QMessageBox::information(this,
-       tr("Fim"),
-       tr("Parabéns, você venceu!"));
+    if(qtd_pecas==1){
+        QMessageBox::information(this,
+            tr("Fim"),
+            tr("Parabéns, você venceu!"));
+    }else{
+        QMessageBox::information(this,
+            tr("Fim"),
+            tr("Mals, tente no semestre que vem!"));
+    }
 }
 
 void RestaUm::trocarModo(QAction* modo) {
