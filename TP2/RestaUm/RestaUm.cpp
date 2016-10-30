@@ -37,21 +37,10 @@ RestaUm::RestaUm(QWidget *parent) :
             }
         }
     }
-    //Tabuleiros
-    if (ui->actionTradicional->isChecked())
-        Tradicional();
-    else if (ui->actionCruz->isChecked())
-        Cruz();
-    else if (ui->actionMais->isChecked())
-        Mais();
-    else if (ui->actionBanquinho->isChecked())
-        Banquinho();
-    else if (ui->actionFlecha->isChecked())
-        Flecha();
-    else if (ui->actionPiramide->isChecked())
-        Piramide();
-    else if (ui->actionLosango->isChecked())
-        Losango();
+
+    DrawMap();
+
+    //QObject::connect(ui->_labelQtd,qtd_pecasChanged(),this, updateQtd_pecasLabel());
 
     QObject::connect(
         group,
@@ -85,6 +74,28 @@ RestaUm::~RestaUm() {
     delete ui;
 }
 
+void RestaUm::DrawMap(){
+    //Tabuleiros
+    if (ui->actionTradicional->isChecked())
+        Tradicional();
+    else if (ui->actionCruz->isChecked())
+        Cruz();
+    else if (ui->actionMais->isChecked())
+        Mais();
+    else if (ui->actionBanquinho->isChecked())
+        Banquinho();
+    else if (ui->actionFlecha->isChecked())
+        Flecha();
+    else if (ui->actionPiramide->isChecked())
+        Piramide();
+    else if (ui->actionLosango->isChecked())
+        Losango();
+
+    ui->_labelQtd->setText("Peças Remanecentes: " + QString::number(qtd_pecas));
+}
+
+//_SLOTS_
+
 void RestaUm::play() {
     Peca* peca = qobject_cast<Peca*>(
                 QObject::sender());
@@ -109,10 +120,10 @@ void RestaUm::mostrarFimJogo() {
        tr("Parabéns, você venceu!"));
 }
 
-
 void RestaUm::trocarModo(QAction* modo) {
-    if (modo == ui->actionTradicional)
+    if (modo == ui->actionTradicional){
         qDebug() << "modo: tradicional";
+    }
     else if (modo == ui->actionCruz)
         qDebug() << "modo: cruz";
     else if (modo == ui->actionMais)
@@ -125,9 +136,14 @@ void RestaUm::trocarModo(QAction* modo) {
         qDebug() << "modo: piramide";
     else if (modo == ui->actionLosango)
         qDebug() << "modo: losango";
+    DrawMap();
 }
 
 void RestaUm::Tradicional(){
+    for(int i=0;i<=6;i++)
+        for(int j=0;j<=6;j++)
+            if(m_pecas[i][j])
+                m_pecas[i][j]->setState(Peca::Filled);
     m_pecas[3][3]->setState(Peca::Empty);
     qtd_pecas = 32;
 }
@@ -241,3 +257,9 @@ void RestaUm::Piramide(){
      m_pecas[1][3]->setState(Peca::Filled);
 }
 
+/*
+void RestaUm::updateQtd_pecasLabel(){
+    QObject::connect(ui->_labelQtd,SIGNAL(qtd_pecasChanged()),this,SLOT(updateQtd_pecasLabel()));
+    emit qtd_pecasChanged();
+}
+*/
