@@ -49,6 +49,7 @@ private slots:
     void atualizarCoordenadas();
     void removerSelecionados();
     void atualizarLabelQtdPecas();
+    bool verificaQtdJogadas();
     //void updateQtd_pecasLabel();
 };
 
