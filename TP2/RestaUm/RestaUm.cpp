@@ -4,7 +4,6 @@
 #include <QDebug>
 #include <QActionGroup>
 #include <QMessageBox>
-
 RestaUm::RestaUm(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::RestaUm) {
@@ -33,17 +32,14 @@ RestaUm::RestaUm(QWidget *parent) :
                   this,
                   SLOT(play()));
 
-                m_pecas[r][c]->setState(Peca::Filled);
+                //m_pecas[r][c]->setState(Peca::Filled);
             }
         }
     }
 
-    DrawMap();
-    this->estado = RestaUm::Selecionar;
-    atualizarCoordenadas();
-    exibirJogadas(m_pecas[3][3]);
 
-    //QObject::connect(ui->_labelQtd,qtd_pecasChanged(),this, updateQtd_pecasLabel());
+    //inicializacao
+    startGame();
 
     QObject::connect(
         group,
@@ -89,6 +85,13 @@ RestaUm::~RestaUm() {
     delete ui;
 }
 
+void RestaUm::startGame(){
+    DrawMap();
+    this->estado = RestaUm::Selecionar;
+    atualizarCoordenadas();
+    exibirJogadas(m_pecas[3][3]);
+}
+
 void RestaUm::DrawMap(){
     //Tabuleiros
     if (ui->actionTradicional->isChecked())
@@ -106,7 +109,7 @@ void RestaUm::DrawMap(){
     else if (ui->actionLosango->isChecked())
         Losango();
     //m_pecas[3][3]->setState(Peca::Selected);
-    atualizarQtdPecas();
+    atualizarLabelQtdPecas();
 }
 
 //_SLOTS_
@@ -119,6 +122,7 @@ void RestaUm::play() {
         this->estado = RestaUm::Escolher;
         exibirJogadas(peca);
     }else{
+        /*
         if(peca->getState() == Peca::Selected){
             peca->setState(Peca::Filled);
             this->estado = RestaUm::Selecionar;
@@ -153,7 +157,7 @@ void RestaUm::play() {
                     m_pecas[i+1][j]->setState(Peca::Empty);
             }
             qtd_pecas--;
-            atualizarQtdPecas();
+            atualizarLabelQtdPecas();
             m_pecas[i][j]->setState(Peca::Filled);
             removerSelecionados();
         }
@@ -162,10 +166,14 @@ void RestaUm::play() {
                 tr("Ops"),
                 tr("Desmarque a peça selecionada ou selecione as peças marcadas"));
         }
-
+    */
     }
 
-    /*if(qtd_pecas == 1)
+    verifica_vitoria();
+}
+
+void RestaUm::verifica_vitoria(){
+    if(qtd_pecas == 1)
         emit vitoria();
     else{
         bool keep = false;
@@ -173,35 +181,43 @@ void RestaUm::play() {
             for(int j=0;j<7;j++){
                if(m_pecas[i][j]){
                    if(m_pecas[i-2][j] || m_pecas[i+2][j] || m_pecas[i][j-2] || m_pecas[i][j+2]){
+                       qDebug() << i << ", "  << j;
                        if( ((i-2) >= 0) && m_pecas[i-2][j]){
-                           if(m_pecas[i-2][j]->getState() == Peca::Empty && m_pecas[i-1][j]->getState() == Peca::Filled){
+                           if(m_pecas[i-2][j]->getState() == Peca::Empty && (m_pecas[i-1][j]->getState() == Peca::Filled  || m_pecas[i-1][j]->getState() == Peca::Selected) ){
                                 keep = true;
-                           }
-                       }
+                                qDebug() << "1";
+                           }else qDebug() << "N1";
+                       }else qDebug() << "N11";
                        if( ((i+2) < 7) && m_pecas[i+2][j]){
-                           if(m_pecas[i+2][j]->getState() == Peca::Empty && m_pecas[i+1][j]->getState() == Peca::Filled){
+                           if(m_pecas[i+2][j]->getState() == Peca::Empty && (m_pecas[i+1][j]->getState() == Peca::Filled  || m_pecas[i+1][j]->getState() == Peca::Selected) ){
                                 keep = true;
-                           }
-                       }
+                                qDebug() << "2";
+                           }else qDebug() << "N2";
+                       }else qDebug() << "N22";
                        if( ((j-2) >= 0) && m_pecas[i][j-2]){
-                           if(m_pecas[i][j-2]->getState() == Peca::Empty && m_pecas[i][j-1]->getState() == Peca::Filled){
+                           if(m_pecas[i][j-2]->getState() == Peca::Empty && (m_pecas[i][j-1]->getState() == Peca::Filled  || m_pecas[i][j-1]->getState() == Peca::Selected) ){
                                 keep = true;
-                           }
-                       }
-                       if( ((i+2) < 7 ) && m_pecas[i][j+2]){
-                           if(m_pecas[i][j+2]->getState() == Peca::Empty && m_pecas[i][j+1]->getState() == Peca::Filled){
+                                qDebug() << "3";
+                           }else qDebug() << "N3";
+                       }else qDebug() << "N33";
+                       if( ((j+2) < 7 ) && m_pecas[i][j+2]){
+                           if(m_pecas[i][j+2]->getState() == Peca::Empty ){
+                               if( m_pecas[i][j+1]->getState() == Peca::Filled || m_pecas[i][j+1]->getState() == Peca::Selected){
                                 keep = true;
-                           }
-                       }
+                                qDebug() << "4";
+                               }else qDebug() << "N4";
+                           }else qDebug() << "N44";
+                       }else qDebug() << "N444";
                    }
                }
+               qDebug() << "________";
             }
         }
         if(!keep) emit gameOver();
-    }*/
+    }
 }
 
-void RestaUm::atualizarQtdPecas(){
+void RestaUm::atualizarLabelQtdPecas(){
     ui->_labelQtd->setText("Peças Remanecentes: " + QString::number(qtd_pecas));
 }
 
@@ -213,37 +229,42 @@ void RestaUm::exibirJogadas(Peca* peca){
     if(peca->getState() == Peca::Selected){
         //Cima
         if((i - 2) >= 0 && m_pecas[i-2][j]){
-            if(m_pecas[i-2][j]->getState() == Peca::Filled && m_pecas[i-1][j]->getState() == Peca::Filled){
+            if(m_pecas[i-2][j]->getState() == Peca::Empty && m_pecas[i-1][j]->getState() == Peca::Filled){
                 m_pecas[i-2][j]->setState(Peca::Jumpable);
                 cont++;
                 posicao = 0;
+                lista << m_pecas[i-2][j];
             }
         }
         //Baixo
         if((i + 2) <= 6 && m_pecas[i+2][j]){
-            if(m_pecas[i+2][j]->getState() == Peca::Filled && m_pecas[i+1][j]->getState() == Peca::Filled){
+            if(m_pecas[i+2][j]->getState() == Peca::Empty && m_pecas[i+1][j]->getState() == Peca::Filled){
                 m_pecas[i+2][j]->setState(Peca::Jumpable);
                 cont++;
                 posicao = 1;
+                lista << m_pecas[i+2][j];
             }
         }
         //Esquerda
         if((j - 2) >= 0 && m_pecas[i][j-2]){
-            if(m_pecas[i][j-2]->getState() == Peca::Filled && m_pecas[i][j-1]->getState() == Peca::Filled){
+            if(m_pecas[i][j-2]->getState() == Peca::Empty && m_pecas[i][j-1]->getState() == Peca::Filled){
                 m_pecas[i][j-2]->setState(Peca::Jumpable);
                 cont++;
                 posicao = 2;
+                lista << m_pecas[i][j-2];
             }
         }
         //Direita
         if((j + 2) <= 6 && m_pecas[i][j+2]){
-            if(m_pecas[i][j+2]->getState() == Peca::Filled && m_pecas[i][j+1]->getState() == Peca::Filled){
+            if(m_pecas[i][j+2]->getState() == Peca::Empty && m_pecas[i][j+1]->getState() == Peca::Filled){
                 m_pecas[i][j+2]->setState(Peca::Jumpable);
                 cont++;
                 posicao = 3;
+                lista << m_pecas[i][j+2];
             }
         }
-        if(cont == 1){
+        //uma jogada possivel
+        if(lista.size() == 1){
             switch(posicao){
                 case 0:
                     m_pecas[i-1][j]->setState(Peca::Empty);
@@ -263,9 +284,13 @@ void RestaUm::exibirJogadas(Peca* peca){
                     break;
             }
             this->estado = RestaUm::Selecionar;
-            peca->setState(Peca::Filled);
+            peca->setState(Peca::Empty);
+            //peca->setState(Peca::Filled);
             this->qtd_pecas--;
-            atualizarQtdPecas();
+            atualizarLabelQtdPecas();
+        }else if(lista.size() > 1){//mais de uma jogada possivel
+
+
         }
     }
 
@@ -317,6 +342,7 @@ void RestaUm::Tradicional(){
         for(int j=0;j<=6;j++)
             if(m_pecas[i][j])
                 m_pecas[i][j]->setState(Peca::Filled);
+    m_pecas[3][3]->setState(Peca::Empty);
     qtd_pecas = 32;
 }
 
@@ -437,7 +463,6 @@ void RestaUm::atualizarCoordenadas(){
                 m_pecas[i][j]->setX(i);
                 m_pecas[i][j]->setY(j);
             }
-
         }
     }
 }
