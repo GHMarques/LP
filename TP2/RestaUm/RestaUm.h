@@ -16,6 +16,10 @@ public:
     RestaUm(QWidget *parent = 0);
     ~RestaUm();
     void DrawMap();
+    enum Estado {
+            Selecionar,
+            Escolher
+        };
 signals:
     void gameOver();
     void vitoria();
@@ -24,6 +28,7 @@ private:
     Ui::RestaUm *ui;
     Peca* m_pecas[7][7];
     int qtd_pecas;
+    RestaUm::Estado estado;
 private slots:
     void Tradicional();
     void Mais();
@@ -37,6 +42,10 @@ private slots:
     void mostrarSobre();
     void mostrarFimJogo();
     void trocarModo(QAction* modo);
+    void exibirJogadas(Peca* peca);
+    void atualizarCoordenadas();
+    void removerSelecionados();
+    void atualizarQtdPecas();
     //void updateQtd_pecasLabel();
 };
 

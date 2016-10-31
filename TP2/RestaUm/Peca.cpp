@@ -18,8 +18,24 @@ void Peca::setState(Peca::State state) {
     }
 }
 
-int Peca::getState(){
-    return (int)m_state;
+Peca::State Peca::getState(){
+    return this->m_state;
+}
+
+void Peca::setX(int i){
+    x = i;
+}
+
+void Peca::setY(int j){
+    y = j;
+}
+
+int Peca::getX(){
+    return this->x;
+}
+
+int Peca::getY(){
+    return this->y;
 }
 
 void Peca::updateIcon() {

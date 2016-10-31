@@ -13,7 +13,6 @@ public:
         Selected,
         Jumpable
     };
-    int getState();
     explicit Peca(QWidget *parent = 0);
     ~Peca();
 
@@ -22,9 +21,16 @@ signals:
 
 public slots:
     void setState(Peca::State state);
+    Peca::State getState();
+    void setX(int i);
+    int getX();
+    void setY(int j);
+    int getY();
 
 private:
     Peca::State m_state;
+    int x;
+    int y;
 
 private slots:
     void updateIcon();
