@@ -1,2 +1,2 @@
-gerar(X, Y, X).
-gerar(X, Y, L) :- AUX is X+1, AUX =< Y, gerar(AUX, Y, L).
+gerar(X,X,L) :- !, L = [X].
+gerar(Y,X,[Y|Ys]) :- Y =< X, AUX is Y+1, gerar(AUX, X, Ys).
