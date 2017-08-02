@@ -5,6 +5,8 @@
  */
 package model;
 
+import static java.lang.System.exit;
+
 /**
  *
  * @author wendell
@@ -28,8 +30,8 @@ public class CompareBoolValue extends BoolValue{
         Value<?> v2 = (this.right instanceof Variable ? ((Variable)this.right).value() : this.right);
                 
         if (!(v1 instanceof IntValue && v2 instanceof IntValue)) {
-            // Tipos invalidos
-            // abortar!
+            System.out.println(this.line()+": Tipos inválidos");
+            System.exit(1);
             return null;
         }
         
@@ -50,9 +52,10 @@ public class CompareBoolValue extends BoolValue{
             case LowerEqual:
                 return (i1 <= i2);
             default:
-                return null;
+                System.out.println("Operacao invalida na linha "+line());
+                exit(1);
         }
-
+        return null;
     }
             
 }

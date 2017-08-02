@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 import model.*;
 import Command.*;
+import static java.lang.System.exit;
+import java.text.DecimalFormat;
 /**
  *
  * @author gusta
@@ -23,15 +25,18 @@ public class SyntaticalAnalysis {
     }
 
     private void matchToken(TokenType type) throws IOException{
-        System.out.println("(" + current.token + ", " + current.type + ") = " + type);
+        //System.out.println("(" + current.token + ", " + current.type + ") = " + type);
         if(current.type == type){
             current  = la.nextToken();
         }else{
             if(current.type == TokenType.END_OF_FILE ||
                current.type == TokenType.UNEXPECTED_EOF){
-                abortEOF();
-            }else{
-                abortUnexpectToken();
+                abortEOF(la.getLine());
+            } else if(current.type == TokenType.INVALID_TOKEN){
+                abortInvalidToken(la.getLine(), current.token);
+            }
+            else{
+                abortUnexpectToken(la.getLine(), current.token);
             }
         }
 
@@ -77,7 +82,15 @@ public class SyntaticalAnalysis {
         }else if(current.type == TokenType.IF){//<--
             return procIF();            
         }else{
-            abortUnexpectToken();    
+            if(current.type == TokenType.END_OF_FILE ||
+               current.type == TokenType.UNEXPECTED_EOF){
+                abortEOF(la.getLine());
+            } else if(current.type == TokenType.INVALID_TOKEN){
+                abortInvalidToken(la.getLine(), current.token);
+            }
+            else{
+                abortUnexpectToken(la.getLine(), current.token);
+            }
             return null;
         }
     }
@@ -93,7 +106,7 @@ public class SyntaticalAnalysis {
         return iiv;
     }
 
-    private Map<String,Variable> myvariables = new HashMap<String,Variable>();
+    private Map<String,Variable> myvariables = new HashMap<>();
     Variable procVar() throws IOException{
         String varName = current.token;
         matchToken(TokenType.VAR);
@@ -146,22 +159,33 @@ public class SyntaticalAnalysis {
         
         CompareBoolValue cbv = new CompareBoolValue(op,expr1,expr2,la.getLine());
         DualBoolExpr dbe = null;
-        BoolValue tmp = null;
-        BoolOp bo;
+        BoolValue add = null;
+        BoolOp bo = null;
+        
         if(current.type == TokenType.AND || current.type == TokenType.OR){
+            if(current.type == TokenType.AND){
+                    matchToken(TokenType.AND);
+                    bo = BoolOp.And;
+            }else if(current.type == TokenType.OR){
+                    matchToken(TokenType.OR);
+                    bo = BoolOp.Or;
+            }
+            add = procBoolExpression();
+            dbe = new DualBoolExpr(bo, cbv, add, la.getLine());
+                    
             while(current.type == TokenType.AND ||
                     current.type == TokenType.OR){
                 if(current.type == TokenType.AND){
                     matchToken(TokenType.AND);
                     bo = BoolOp.And;
-                    tmp = procBoolExpression();
+                    add = procBoolExpression();
                 }
                 else {
                     matchToken(TokenType.OR);
                     bo = BoolOp.And;
-                    tmp = procBoolExpression();
+                    add = procBoolExpression();
                 }
-                dbe = new DualBoolExpr(bo, dbe, tmp, la.getLine());
+                dbe = new DualBoolExpr(bo, dbe, add, la.getLine());
             }    
             return dbe;
         }
@@ -189,7 +213,7 @@ public class SyntaticalAnalysis {
             matchToken(TokenType.GREATER_EQUAL);
             op = RelOp.GreaterEqual;
         }else{
-            abortUnexpectToken();
+            abortUnexpectToken(la.getLine(), current.token);
         }
         return op;
     }
@@ -220,31 +244,32 @@ public class SyntaticalAnalysis {
     // <expr> ::= <term> [ ('+' | '-') <term> ]
     private Value<?> procExpr() throws IOException {
         Value<?> left = procTerm();
+        DualIntExpr expr = null;
+        ////System.out.println("Next: (" + current.token + ", " + current.type + ")");
+            while(current.type == TokenType.PLUS || current.type == TokenType.MINS){
+                IntOp op = null;
+                if (current.type == TokenType.PLUS) {
+                    matchToken(TokenType.PLUS);
+                    op = IntOp.Add;
+                }  else {
+                    matchToken(TokenType.MINS);
+                    op = IntOp.Sub;
+                }
+                
+                Value<?> right = procTerm();
 
-        System.out.println("Next: (" + current.token + ", " + current.type + ")");
-        if (current.type == TokenType.PLUS || current.type == TokenType.MINS) {
-            IntOp op = null;
-            if (current.type == TokenType.PLUS) {
-                matchToken(TokenType.PLUS);
-                op = IntOp.Add;
-            }  else {
-                matchToken(TokenType.MINS);
-                op = IntOp.Sub;
+                expr = new DualIntExpr(op, left, right, la.getLine());
+                left = expr;
             }
-
-            Value<?> right = procTerm();
-
-            DualIntExpr expr = new DualIntExpr(op, left, right, la.getLine());
-            return expr;
-        } else {
             return left;
-        }
     }
 
     // <term> ::= <factor> [ ('*' | '/' | '%') <factor> ]
     private Value<?> procTerm() throws IOException {
         Value<?> fact1 = procFactor();
-        if (current.type == TokenType.TIMES || current.type == TokenType.DIV || current.type == TokenType.MOD) {
+        DualIntExpr expr = null;
+        while (current.type == TokenType.TIMES || current.type == TokenType.DIV || current.type == TokenType.MOD)
+        {
             IntOp op = null;
             if (current.type == TokenType.TIMES) {
                 matchToken(TokenType.TIMES);
@@ -259,25 +284,25 @@ public class SyntaticalAnalysis {
 
             Value<?> fact2 = procFactor();
 
-            DualIntExpr expr = new DualIntExpr(op, fact1, fact2, la.getLine());
-            return expr;
-        } else {
-            return fact1;
+            expr = new DualIntExpr(op, fact1, fact2, la.getLine());
+            fact1 = expr;
         }
-        
+        return fact1;        
     }
 
     // <factor> ::= <number> | <input> | <value> | '(' <expr> ')'
     private Value<?> procFactor() throws IOException {
-        System.out.println("Next: (" + current.token + ", " + current.type + ")");
+        //System.out.println("Next: (" + current.token + ", " + current.type + ")");
+        
+        
         if (current.type == TokenType.NUMBER) {
             Integer n = procNumber();
             ConstIntValue cv = new ConstIntValue(n, la.getLine());
             return cv;
         } else if (current.type == TokenType.INPUT) {
             return procInput();
-        }else if(current.type == TokenType.VALUE ||
-                 current.type == TokenType.VAR)
+        }else if(current.type == TokenType.VAR   ||
+                current.type  == TokenType.OPEN_BRA)
         {
             return procValue();
         }else if(current.type == TokenType.OPEN_PAR){
@@ -286,7 +311,7 @@ public class SyntaticalAnalysis {
             matchToken(TokenType.CLOSE_PAR);
             return expr;
         }else{
-            abortUnexpectToken();
+            abortUnexpectToken(la.getLine(), current.token);
         }
         return null;
     }
@@ -305,14 +330,14 @@ public class SyntaticalAnalysis {
     // <value> ::= (<var> | <gen>)
     //                  { '.' (<opposed> | <transposed> | <sum> | <mul>) }
     //                  [ '.' (<size> | <rows> | <cols> | <val>) ]
-    public Value<?> procValue() throws IOException {//revisar
+    public Value<?> procValue() throws IOException {
         Value<?> value = null;
         if(current.type == TokenType.VAR){
             value = procVar();
         }else if(current.type == TokenType.OPEN_BRA){
             value = procGen();
         }else {
-            abortUnexpectToken();
+            abortUnexpectToken(la.getLine(), current.token);
         }
         
         while(current.type == TokenType.DOT){
@@ -335,8 +360,11 @@ public class SyntaticalAnalysis {
                 break;
             }else if(current.type == TokenType.TRANSPOSED){
                 value = procTransposed(value);
+            } else if (current.type == TokenType.VALUE){
+                value = procVal(value);
+                break;
             }else{
-                abortUnexpectToken();
+                abortUnexpectToken(la.getLine(), current.token);
             }
         }
 
@@ -374,11 +402,24 @@ public class SyntaticalAnalysis {
     
     //<mul> ::= mul '(' <value> |  <expr>  ')' 
     private MulMatrixValue procMul(Value<?> m) throws IOException {
+        MulMatrixValue mmv = null;
         matchToken(TokenType.MUL);
         matchToken(TokenType.OPEN_PAR);
-        Value<?> m2 = procExpr();//Posso do expr cair em value
+        Value<?> m2 = null;
+        if(current.type == TokenType.NUMBER){
+            int n = procNumber();
+            m2 = new ConstIntValue(n,la.getLine());
+        }else if(current.type == TokenType.VAR){
+            m2 = procVar();
+        }else if(current.type == TokenType.OPEN_BRA){
+            m2 = procGen();
+        }else if(current.type == TokenType.INPUT){
+            m2 = procInput();
+        }else{
+            abortUnexpectToken(la.getLine(), current.token);
+        }
         matchToken(TokenType.CLOSE_PAR);
-        MulMatrixValue mmv = new MulMatrixValue(m, m2, la.getLine());
+        mmv = new MulMatrixValue(m, m2, la.getLine());
         return mmv;
     }
 
@@ -399,7 +440,7 @@ public class SyntaticalAnalysis {
         matchToken(TokenType.COMMA);
         Value<?> expr2 = procExpr();
         matchToken(TokenType.CLOSE_PAR);
-        ValueIntMatrixValue vimv = new ValueIntMatrixValue(matrix, expr1, expr2, la.getLine());
+        ValueIntMatrixValue vimv = new ValueIntMatrixValue(expr1, expr2,matrix, la.getLine());
         return vimv;
     }
 
@@ -438,7 +479,7 @@ public class SyntaticalAnalysis {
             SeqMatrixValue iseqmv  =  procISeq();
             return iseqmv;
         }else{
-            abortUnexpectToken();
+            abortUnexpectToken(la.getLine(), current.token);
         }
         return null;
     }
@@ -466,24 +507,38 @@ public class SyntaticalAnalysis {
             Value<?> add = null;
             if (current.type == TokenType.STRING) {
                 add = procString();
-            } else {
+            }else{                
                 add = procExpr();
             }
-            if(add != null){
+            if(value != null){
                 value = new StringConcat(value, add, la.getLine());
             }else{
                 value = add;
             }
         }
+        //System.out.println("SAINDO: "+current.token+"   "+current.type);
         return value;
     }
     
-    private void abortEOF() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private void abortEOF(int line) {
+        DecimalFormat df = new DecimalFormat("00");
+        String l = df.format(line);
+        System.out.println(l + ": Fim de arquivo inesperado.");
+        exit(0);
     }
 
-    private void abortUnexpectToken() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private void abortUnexpectToken(int line, String token) {
+        DecimalFormat df = new DecimalFormat("00");
+        String l = df.format(line);
+        System.out.println(l + ": Lexema não esperado [" + token + "]");
+        exit(0);
+    }
+    
+    private void abortInvalidToken(int line, String token) {
+        DecimalFormat df = new DecimalFormat("00");
+        String l = df.format(line);
+        System.out.println(l + ": Lexema inválido [" + token + "]");
+        exit(0);
     }
 
     //<cols> ::= cols '(' ')'
@@ -577,4 +632,6 @@ public class SyntaticalAnalysis {
         SeqMatrixValue seqmv = new SeqMatrixValue(expr1, expr2, true, la.getLine());
         return seqmv;
     }
+
+    
 }

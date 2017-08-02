@@ -27,8 +27,8 @@ public class ShowCommand extends Command {
         }else if (v instanceof StringValue){
             String s = ((StringValue) v).value();
             System.out.println(s);
-        } else if (v instanceof MatrixValue){
-            Matrix m = ((MatrixValue) v).value();
+        } else if (v instanceof RefMatrixValue){
+            Matrix m = ((RefMatrixValue) v).value();
             m.show();
         }else{
             //Tipos invalidos e aborta

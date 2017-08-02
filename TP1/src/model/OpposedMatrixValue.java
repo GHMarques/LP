@@ -5,6 +5,8 @@
  */
 package model;
 
+import static java.lang.System.exit;
+
 /**
  *
  * @author wendell
@@ -21,13 +23,14 @@ public class OpposedMatrixValue extends MatrixValue {
 
     @Override
     public Matrix value() {
-        Value<?> v = (value instanceof Variable ? (Variable) value.value() : value);
+        Value<?> v = (value instanceof Variable ? ((Variable)this.value).value() : value);
         
         if (v instanceof MatrixValue){
             Matrix x = ((MatrixValue) v).value();
             return x.opposed();
         } else {
-            // FIXME: Erro de tipos!
+            System.out.println(this.line()+": Tipos inválidos");
+            System.exit(1);
             return null;
         }
     }

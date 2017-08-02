@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package model;
+import java.text.DecimalFormat;
 import java.util.Random;
 /**
  *
@@ -16,6 +17,7 @@ public class Matrix {
     public Matrix(int rows, int cols) {
         this.rows = rows;
         this.cols = cols;
+        matrix = new int[rows][cols];
     }
 
     public void setRows(int rows) {
@@ -31,12 +33,27 @@ public class Matrix {
     }
     
     public void show(){
+        DecimalFormat df = new DecimalFormat("00");
+        String n;
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                System.out.println(matrix[i][j]+' ');
+                n = df.format(matrix[i][j]);
+                System.out.print(n+" ");
             }
-            System.out.println('\n');
+            System.out.print('\n');
         }
+    }
+    
+    public String showString(){
+        String s = new String();
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                s += matrix[i][j];
+                s += " ";
+            }
+            s += "\n";
+        }
+        return s;
     }
 
     public int rows() {
@@ -100,12 +117,16 @@ public class Matrix {
     }
     
     public Matrix mul(Matrix x, Matrix y){
-        if(x.rows() == y.cols())//Na especificacao isso tem q bater
-            if(x.cols == y.rows){//e isso tbm
-                Matrix m = new Matrix(x.rows(),y.cols());
-                //implementar
+        Matrix m = new Matrix(x.rows,y.cols);
+        for(int i=0; i < x.rows; i++) {
+            for(int j=0; j < y.cols; j++){ 
+                int soma=0; 
+                for(int k=0; k < x.cols; k++) 
+                    soma += x.matrix[i][k]*y.matrix[k][j]; 
+                m.matrix[i][j] = soma; 
             }
-        return null;
+        }
+        return m;
     }
     
     public Matrix mul(Matrix m,int n){
@@ -162,26 +183,20 @@ public class Matrix {
     }
     
     public static Matrix seq(int x, int y){
-        if(y > x){
-            Matrix m = new Matrix(1,y-x+1);
-            int c = x;
-            for (int i = 0; i < y-x; i++) {
-                m.matrix[1][i] = c++;
-            }
-            return m;
+        Matrix m = new Matrix(1,y-x+1);
+        int c = x;
+        for (int i = 0; i <= y-x; i++) {
+            m.matrix[0][i] = c++;
         }
-        return null;
+        return m;
     }
     
     public static Matrix iseq(int x, int y){
-        if(y < x){
-            Matrix m = new Matrix(1,x-y+1);
-            int c = x;
-            for (int i = x; i > x-y+1; i--) {
-                m.matrix[1][i-1] = c--;
-            }
-            return m;
+        Matrix m = new Matrix(1,x-y+1);
+        int c = x;
+        for (int i = 0; i <= x-y; i++) {
+            m.matrix[0][i] = c--;
         }
-        return null;
+        return m;
     }
 }

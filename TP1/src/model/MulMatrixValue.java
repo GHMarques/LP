@@ -5,6 +5,8 @@
  */
 package model;
 
+import static java.lang.System.exit;
+
 /**
  *
  * @author wendell
@@ -22,19 +24,25 @@ public class MulMatrixValue extends MatrixValue{
 
     @Override
     public Matrix value() {
-        Value<?> v1 = (m instanceof Variable ? (Variable) m.value() : m);
-        Value<?> v2 = (v instanceof Variable ? (Variable) v.value() : v);
+        Value<?> v1 = (m instanceof Variable ? ((Variable)this.m).value() : m);
+        Value<?> v2 = (v instanceof Variable ? ((Variable)this.v).value() : v);
         
         if (v1 instanceof MatrixValue && v2 instanceof MatrixValue){
             Matrix x = ((MatrixValue) v1).value();
             Matrix y = ((MatrixValue) v2).value();
+            
+            if(x.cols() != y.rows()){
+                System.out.println("Operacao invalida na linha "+line());
+                exit(1);
+            }
             return x.mul(x, y);
-        }else if (v1 instanceof MatrixValue && v2 instanceof ConstIntValue){
+        }else if (v1 instanceof MatrixValue && v2 instanceof IntValue){
             Matrix x = ((MatrixValue) v1).value();
-            int y = ((ConstIntValue) v2).value();
+            int y = ((IntValue) v2).value();
             return x.mul(x, y);
         }else {
-            // FIXME: Erro de tipos!
+            System.out.println(this.line()+": Tipos inválidos");
+            System.exit(1);
             return null;
         }
     }

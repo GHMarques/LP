@@ -17,9 +17,9 @@ class SymbolTable {
         st.put("EOF", TokenType.END_OF_FILE);*/
         
         //OTHERS
-        st.put("", TokenType.VAR);
-        st.put("", TokenType.STRING);
-        st.put("", TokenType.NUMBER);
+//        st.put("", TokenType.VAR);
+//        st.put("", TokenType.STRING);
+//        st.put("", TokenType.NUMBER);
         
         //Functions
         st.put("=", TokenType.ASSIGN);
@@ -33,8 +33,8 @@ class SymbolTable {
         
         //MATRIX FUNCTIONS
         st.put("rand", TokenType.RAND);
-        st.put("sec", TokenType.SEQ);
-        st.put("isec", TokenType.ISEQ);
+        st.put("seq", TokenType.SEQ);
+        st.put("iseq", TokenType.ISEQ);
         st.put("null", TokenType.NULL);
         st.put("fill", TokenType.FILL);
         st.put("id", TokenType.ID);

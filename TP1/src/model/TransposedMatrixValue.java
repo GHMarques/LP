@@ -19,13 +19,14 @@ public class TransposedMatrixValue extends MatrixValue{
 
     @Override
     public Matrix value() {
-        Value<?> v = (m instanceof Variable ? (Variable) m.value() : m);
+        Value<?> v = (m instanceof Variable ?((Variable)this.m).value() : m);
         
         if (v instanceof MatrixValue){
             Matrix x = ((MatrixValue) v).value();
             return x.transposed();
         } else {
-            // FIXME: Erro de tipos!
+            System.out.println(this.line()+": Tipos inválidos");
+            System.exit(1);
             return null;
         }
     }

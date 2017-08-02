@@ -5,6 +5,8 @@
  */
 package model;
 
+import static java.lang.System.exit;
+
 /**
  *
  * @author wendell
@@ -20,15 +22,16 @@ public class SumMatrixValue extends MatrixValue{
 
     @Override
     public Matrix value() {
-        Value<?> v1 = (m1 instanceof Variable ? (Variable) m1.value() : m1);
-        Value<?> v2 = (m2 instanceof Variable ? (Variable) m2.value() : m2);
+        Value<?> v1 = (m1 instanceof Variable ? ((Variable)this.m1).value() : m1);
+        Value<?> v2 = (m2 instanceof Variable ? ((Variable)this.m2).value() : m2);
         
         if (v1 instanceof MatrixValue && v2 instanceof MatrixValue){
             Matrix x = ((MatrixValue) v1).value();
             Matrix y = ((MatrixValue) v2).value();
             return x.sum(x, y);
         } else {
-            // FIXME: Erro de tipos!
+            System.out.println(this.line()+": Tipos inválidos");
+            System.exit(1);
             return null;
         }
     }

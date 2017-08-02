@@ -20,8 +20,41 @@ public class StringConcat  extends StringValue{
 
     @Override
     public String value() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Value<?> expr1 = (this.left instanceof Variable ? ((Variable)this.left).value() : this.left);
+        Value<?> expr2 = (this.right instanceof Variable ? ((Variable)this.right).value() : this.right);
+        
+        String str = "";
+
+        if (expr1 instanceof IntValue) {
+            str = Integer.toString(((IntValue) expr1).value());
+        } else if (expr1 instanceof StringValue) {
+            str = ((StringValue) expr1).value();
+        }
+        else if(expr1 instanceof RefMatrixValue){
+            Matrix m;
+            m = ((MatrixValue) expr1).value();
+            str = m.showString();
+        } else {
+            System.out.println(this.line()+": Tipos inválidos");
+            System.exit(1);
+            return null;
+        }
+
+        if (expr2 instanceof IntValue) {
+            str += Integer.toString(((IntValue) expr2).value());
+        } else if (expr2 instanceof StringValue) {
+            str += ((StringValue) expr2).value();
+        }
+        else if(expr2 instanceof RefMatrixValue){
+            Matrix m;
+            m = ((MatrixValue) expr2).value();
+            str = m.showString();
+        } else {
+            System.out.println(this.line()+": Tipos inválidos");
+            System.exit(1);
+            return null;
+        }
+
+        return str;
     }
-    
-    
 }

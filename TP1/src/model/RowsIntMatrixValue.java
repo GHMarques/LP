@@ -5,6 +5,8 @@
  */
 package model;
 
+import static java.lang.System.exit;
+
 /**
  *
  * @author wendell
@@ -17,13 +19,14 @@ public class RowsIntMatrixValue extends IntMatrixValue{
 
     @Override
     public Integer value() {
-        Value<?> v = (m instanceof Variable ? (Variable) m.value() : m);
+        Value<?> v = (m instanceof Variable ? ((Variable)this.m).value() : m);
         
         if (v instanceof MatrixValue){
             Matrix x = ((MatrixValue) v).value();
             return x.rows();
-        } else {
-            // FIXME: Erro de tipos!
+        }else{
+           System.out.println(this.line()+": Tipos inválidos");
+            System.exit(1);
             return null;
         }
     }

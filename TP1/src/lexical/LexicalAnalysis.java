@@ -39,6 +39,8 @@ public class LexicalAnalysis implements AutoCloseable {
                 case 1:
                     if(c == -1)
                         return lex;
+                    else if(c == '\n')
+                        this.line++;
                     else if(c == ' ' || c == '\t' || c == '\n' || c == '\r')
                         estado = 1;
                     else if(c == '#')
@@ -70,12 +72,16 @@ public class LexicalAnalysis implements AutoCloseable {
                     else{
                         lex.token += (char)c;
                         lex.type = TokenType.INVALID_TOKEN;
-                        //return lex;
+                        return lex;
                     }  
                     break;
                 case 2:
-                    if(c == '\n')
+                    if(c == '\n'){
+                        line++;
                         estado = 1;
+                    }   
+                    else if(c == -1)
+                        return lex;
                     else
                         estado = 2;
                     break;
@@ -99,11 +105,11 @@ public class LexicalAnalysis implements AutoCloseable {
                     }
                     else if(c == -1){
                         lex.type = TokenType.UNEXPECTED_EOF;
-                        //return lex;
+                        return lex;
                     }
                     else{
                         lex.type = TokenType.INVALID_TOKEN;
-                        //return lex;
+                        return lex;
                     }
                     break;
                 case 5:
@@ -136,6 +142,7 @@ public class LexicalAnalysis implements AutoCloseable {
                         lex.token += (char)c;
                     else if(c == -1){
                         lex.type = TokenType.INVALID_TOKEN;
+                        return lex;
                     }
                     else{
                         estado = 8;

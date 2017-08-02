@@ -20,17 +20,18 @@ public class ValueIntMatrixValue extends IntMatrixValue{
     
     @Override
     public Integer value() {
-        Value<?> row = (v1 instanceof Variable ? (Variable) v1.value() : v1);
-        Value<?> col = (v2 instanceof Variable ? (Variable) v2.value() : v2);
-        Value<?> v = (m instanceof Variable ? (Variable) m.value() : m);
+        Value<?> row = (v1 instanceof Variable ? ((Variable)this.v1).value(): v1);
+        Value<?> col = (v2 instanceof Variable ? ((Variable)this.v2).value(): v2);
+        Value<?> v = (m instanceof Variable ?((Variable)m).value()  : m);
         
-        if (row instanceof ConstIntValue && col instanceof ConstIntValue && (v instanceof MatrixValue)){
-            int i = ((ConstIntValue) row).value();
-            int j = ((ConstIntValue) col).value();
+        if (row instanceof IntValue && col instanceof IntValue && (v instanceof MatrixValue)){
+            int i = ((IntValue) row).value();
+            int j = ((IntValue) col).value();
             Matrix x = ((MatrixValue) v).value();
             return x.value(i, j);
         } else {
-            // FIXME: Erro de tipos!
+            System.out.println(this.line()+": Tipos inválidos");
+            System.exit(1);
             return null;
         }
     }

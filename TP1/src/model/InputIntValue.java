@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package model;
+import static java.lang.System.exit;
 import java.util.Scanner;
 /**
  *
@@ -38,7 +39,9 @@ public class InputIntValue extends IntValue{
             Matrix m = ((MatrixValue) v).value();
             m.show();
         }else{
-            //Tipos invalidos e aborta
+            System.out.println(this.line()+": Tipos inválidos");
+            System.exit(1);
+            return null;
         }
 
         int num = ler.nextInt();

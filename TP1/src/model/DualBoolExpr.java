@@ -5,6 +5,8 @@
  */
 package model;
 
+import static java.lang.System.exit;
+
 /**
  *
  * @author wendell
@@ -27,7 +29,8 @@ public class DualBoolExpr extends BoolValue{
         }else if(op == BoolOp.Or){
             return this.left.value() | this.right.value();
         }else {
-            // FIXME: Erro de tipos!
+            System.out.println(this.line()+": Tipos inválidos");
+            System.exit(1);
             return null;
         }
     }

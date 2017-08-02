@@ -16,7 +16,6 @@ public class Variable extends Value<Value<?>> {
 
     public Variable(String name) {
         super(-1);
-
         this.name = name;
     }
     

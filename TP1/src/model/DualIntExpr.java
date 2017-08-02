@@ -5,6 +5,8 @@
  */
 package model;
 
+import static java.lang.System.exit;
+
 /**
  *
  * @author wendell
@@ -41,11 +43,13 @@ public class DualIntExpr extends IntValue{
                 case Mod:
                     return n1%n2;
                 default:
-                    return -1;
+                    System.out.println("Operacao invalida na linha "+line());
+                    exit(1);
             }
         } else {
-            // FIXME: imprime tipos incompativies e aborta
-            return -1;
+            System.out.println(this.line()+": Tipos inválidos");
+            System.exit(1);
         }
+        return null;
     }
 }
